@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bet Intel - Educational Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .modal-enter { animation: modalEnter 300ms ease-out; }
+        .modal-exit { animation: modalExit 300ms ease-in; }
+        .screen-enter { animation: screenSlideIn 300ms ease-out; }
+        .screen-exit { animation: screenSlideOut 300ms ease-in; }
+        
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes modalExit {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+        
+        @keyframes screenSlideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes screenSlideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-20px); }
+        }
+        
+        .progress-dot-active { background-color: #2563eb; }
+        .progress-dot-inactive { background-color: #d1d5db; }
+        .copy-button-demo { cursor: pointer; transition: all 0.2s; }
+        .copy-button-demo:hover { background-color: #f3f4f6; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <!-- Demo Dashboard Background -->
+    <div class="absolute inset-0 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="text-center text-gray-400 text-lg font-medium">
+                Dashboard Preview (Background)
+            </div>
+            <div class="grid md:grid-cols-3 gap-6 mt-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 h-32 opacity-50"></div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 h-32 opacity-50"></div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 h-32 opacity-50"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Modal Overlay -->
+    <div id="onboardingOverlay" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4">
+        <!-- Onboarding Modal -->
+        <div id="onboardingModal" class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden modal-enter">
+            <!-- Progress Bar -->
+            <div class="h-1 bg-gray-200">
+                <div id="progressBar" class="h-full bg-blue-600 transition-all duration-300" style="width: 16.67%;"></div>
+            </div>
+
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 pb-4">
+                <button id="skipButton" class="text-gray-500 hover:text-gray-700 text-sm font-medium transition">
+                    Skip
+                </button>
+                <div id="screenCounter" class="text-sm font-medium text-gray-600">1/6</div>
+                <button id="closeButton" class="text-gray-400 hover:text-gray-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Screen Content -->
+            <div id="screenContent" class="px-6 pb-6">
+                <!-- Screen 1: Welcome -->
+                <div id="screen1" class="screen-content text-center">
+                    <div class="text-6xl mb-6">👋</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Welcome to Bet Intel</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        We help you find better betting odds using mathematical analysis and peer-to-peer platforms.
+                    </p>
+                    <button class="learn-more-btn text-blue-600 hover:text-blue-700 text-sm font-medium transition">
+                        Learn about Expected Value →
+                    </button>
+                </div>
+
+                <!-- Screen 2: P2P Betting Basics -->
+                <div id="screen2" class="screen-content text-center hidden">
+                    <div class="text-6xl mb-6">🤝</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">What is P2P Betting?</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Instead of betting against the house, you bet directly against other users at your own odds.
+                    </p>
+                    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                        <div class="text-sm font-medium text-blue-800 mb-2">Traditional Sportsbook:</div>
+                        <div class="text-sm text-blue-700">You vs House (Fixed odds)</div>
+                        <div class="text-sm font-medium text-blue-800 mb-2 mt-3">P2P Platform:</div>
+                        <div class="text-sm text-blue-700">You vs Other Users (Your odds)</div>
+                    </div>
+                    <button class="learn-more-btn text-blue-600 hover:text-blue-700 text-sm font-medium transition">
+                        Why is this better? →
+                    </button>
+                </div>
+
+                <!-- Screen 3: EV Analysis -->
+                <div id="screen3" class="screen-content text-center hidden">
+                    <div class="text-6xl mb-6">📊</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">How We Find Value Bets</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        We calculate fair odds using statistical models, then show you opportunities with positive expected value.
+                    </p>
+                    <div class="bg-green-50 rounded-lg p-4 mb-6 text-left">
+                        <div class="text-sm font-medium text-green-800 mb-2">📊 Example: Lakers @ Warriors</div>
+                        <div class="space-y-1 text-sm text-green-700">
+                            <div>Fair Probability: 41.2%</div>
+                            <div>DraftKings Odds: +150 (40.0%)</div>
+                            <div class="font-semibold">→ Edge: +1.2% = Positive EV! ✅</div>
+                        </div>
+                    </div>
+                    <button class="learn-more-btn text-blue-600 hover:text-blue-700 text-sm font-medium transition">
+                        EV Calculation FAQ →
+                    </button>
+                </div>
+
+                <!-- Screen 4: Using Recommendations -->
+                <div id="screen4" class="screen-content text-center hidden">
+                    <div class="text-6xl mb-6">🎯</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">How to Use Recommendations</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        We show you the exact odds to set on each P2P platform for maximum expected value.
+                    </p>
+                    <div class="bg-purple-50 rounded-lg p-4 mb-6">
+                        <div class="text-sm font-medium text-purple-800 mb-3">🎯 Recommended: Lakers +165</div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-purple-700">🏆 Novig: Set +165</span>
+                                <span class="text-gray-600">(fills in 20m)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-green-700">📈 Sporttrade: Set +160</span>
+                                <span class="text-gray-600">(30m)</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-orange-700">⚡ ProphetX: Set +158</span>
+                                <span class="text-gray-600">(45m)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="learn-more-btn text-blue-600 hover:text-blue-700 text-sm font-medium transition">
+                        See Live Example →
+                    </button>
+                </div>
+
+                <!-- Screen 5: Manual Process -->
+                <div id="screen5" class="screen-content text-center hidden">
+                    <div class="text-6xl mb-6">📝</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Setting Odds Manually</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Copy our recommended odds, go to the platform, find the event, and set your limit order.
+                    </p>
+                    <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                        <div class="text-sm font-medium text-blue-800 mb-3">📝 Step-by-Step Process</div>
+                        <div class="space-y-2 text-left text-sm text-blue-700">
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">1</div>
+                                <span>Copy odds: +165 
+                                    <button class="copy-button-demo ml-2 px-2 py-1 bg-gray-100 rounded text-xs font-medium">Copy</button>
+                                </span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">2</div>
+                                <span>Go to Novig →</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">3</div>
+                                <span>Find Lakers @ Warriors</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">4</div>
+                                <span>Select "Lakers Win"</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">5</div>
+                                <span>Enter +165 odds</span>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold mr-3">6</div>
+                                <span>Submit order ✅</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="learn-more-btn text-blue-600 hover:text-blue-700 text-sm font-medium transition">
+                        Detailed Tutorial →
+                    </button>
+                </div>
+
+                <!-- Screen 6: Success Tips -->
+                <div id="screen6" class="screen-content text-center hidden">
+                    <div class="text-6xl mb-6">🏆</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Tips for Success</h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Start small, be patient with orders, and stick to positive EV opportunities only.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 mb-6 text-left">
+                        <div class="bg-green-50 rounded-lg p-3">
+                            <div class="text-green-600 text-lg mb-1">✅</div>
+                            <div class="text-sm font-medium text-green-800">Start Small</div>
+                            <div class="text-xs text-green-600">Test with $25-50</div>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-3">
+                            <div class="text-blue-600 text-lg mb-1">⏰</div>
+                            <div class="text-sm font-medium text-blue-800">Be Patient</div>
+                            <div class="text-xs text-blue-600">Orders take time</div>
+                        </div>
+                        <div class="bg-orange-50 rounded-lg p-3">
+                            <div class="text-orange-600 text-lg mb-1">📊</div>
+                            <div class="text-sm font-medium text-orange-800">Trust the Math</div>
+                            <div class="text-xs text-orange-600">Stick to +EV only</div>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-3">
+                            <div class="text-purple-600 text-lg mb-1">📚</div>
+                            <div class="text-sm font-medium text-purple-800">Keep Learning</div>
+                            <div class="text-xs text-purple-600">Read our guides</div>
+                        </div>
+                    </div>
+                    <button class="learn-more-btn text-blue-600 hover:text-blue-700 text-sm font-medium transition">
+                        Beginner's Guide →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Progress Dots -->
+            <div class="flex justify-center space-x-2 px-6 pb-4">
+                <div class="progress-dot w-2 h-2 rounded-full progress-dot-active transition-colors" data-screen="1"></div>
+                <div class="progress-dot w-2 h-2 rounded-full progress-dot-inactive transition-colors" data-screen="2"></div>
+                <div class="progress-dot w-2 h-2 rounded-full progress-dot-inactive transition-colors" data-screen="3"></div>
+                <div class="progress-dot w-2 h-2 rounded-full progress-dot-inactive transition-colors" data-screen="4"></div>
+                <div class="progress-dot w-2 h-2 rounded-full progress-dot-inactive transition-colors" data-screen="5"></div>
+                <div class="progress-dot w-2 h-2 rounded-full progress-dot-inactive transition-colors" data-screen="6"></div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="flex justify-between items-center p-6 pt-2">
+                <button id="backButton" class="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    ← Back
+                </button>
+                <button id="nextButton" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                    Next →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Trigger Button (for demo) -->
+    <button id="showOnboardingButton" class="fixed bottom-6 right-6 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition z-40">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+    </button>
+
+    <!-- JavaScript -->
+    <script>
+        class OnboardingManager {
+            constructor() {
+                this.currentScreen = 1;
+                this.totalScreens = 6;
+                this.isVisible = true;
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.updateDisplay();
+            }
+
+            initializeElements() {
+                this.overlay = document.getElementById('onboardingOverlay');
+                this.modal = document.getElementById('onboardingModal');
+                this.progressBar = document.getElementById('progressBar');
+                this.screenCounter = document.getElementById('screenCounter');
+                this.backButton = document.getElementById('backButton');
+                this.nextButton = document.getElementById('nextButton');
+                this.skipButton = document.getElementById('skipButton');
+                this.closeButton = document.getElementById('closeButton');
+                this.showButton = document.getElementById('showOnboardingButton');
+                this.progressDots = document.querySelectorAll('.progress-dot');
+                this.learnMoreButtons = document.querySelectorAll('.learn-more-btn');
+                this.copyButtonDemo = document.querySelector('.copy-button-demo');
+            }
+
+            bindEvents() {
+                // Navigation
+                this.nextButton.addEventListener('click', () => this.nextScreen());
+                this.backButton.addEventListener('click', () => this.previousScreen());
+                this.skipButton.addEventListener('click', () => this.skip());
+                this.closeButton.addEventListener('click', () => this.close());
+                this.showButton.addEventListener('click', () => this.show());
+
+                // Progress dots navigation
+                this.progressDots.forEach(dot => {
+                    dot.addEventListener('click', (e) => {
+                        const screenNumber = parseInt(e.target.getAttribute('data-screen'));
+                        this.goToScreen(screenNumber);
+                    });
+                });
+
+                // Learn more buttons
+                this.learnMoreButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        alert('This would open detailed documentation in a real app.');
+                    });
+                });
+
+                // Copy button demo
+                if (this.copyButtonDemo) {
+                    this.copyButtonDemo.addEventListener('click', async () => {
+                        try {
+                            await navigator.clipboard.writeText('+165');
+                            this.copyButtonDemo.textContent = 'Copied!';
+                            this.copyButtonDemo.classList.add('bg-green-100', 'text-green-700');
+                            setTimeout(() => {
+                                this.copyButtonDemo.textContent = 'Copy';
+                                this.copyButtonDemo.classList.remove('bg-green-100', 'text-green-700');
+                            }, 2000);
+                        } catch (err) {
+                            alert('Copied +165 to clipboard!');
+                        }
+                    });
+                }
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (!this.isVisible) return;
+                    
+                    switch (e.key) {
+                        case 'ArrowLeft':
+                            e.preventDefault();
+                            this.previousScreen();
+                            break;
+                        case 'ArrowRight':
+                            e.preventDefault();
+                            this.nextScreen();
+                            break;
+                        case 'Escape':
+                            e.preventDefault();
+                            this.close();
+                            break;
+                    }
+                });
+
+                // Background click to close
+                this.overlay.addEventListener('click', (e) => {
+                    if (e.target === this.overlay) {
+                        this.close();
+                    }
+                });
+            }
+
+            nextScreen() {
+                if (this.currentScreen < this.totalScreens) {
+                    this.goToScreen(this.currentScreen + 1);
+                } else {
+                    this.complete();
+                }
+            }
+
+            previousScreen() {
+                if (this.currentScreen > 1) {
+                    this.goToScreen(this.currentScreen - 1);
+                }
+            }
+
+            goToScreen(screenNumber) {
+                if (screenNumber < 1 || screenNumber > this.totalScreens) return;
+
+                // Hide current screen
+                const currentScreenEl = document.getElementById(`screen${this.currentScreen}`);
+                if (currentScreenEl) {
+                    currentScreenEl.classList.add('hidden');
+                }
+
+                // Show new screen
+                this.currentScreen = screenNumber;
+                const newScreenEl = document.getElementById(`screen${this.currentScreen}`);
+                if (newScreenEl) {
+                    newScreenEl.classList.remove('hidden');
+                    newScreenEl.classList.add('screen-enter');
+                    setTimeout(() => newScreenEl.classList.remove('screen-enter'), 300);
+                }
+
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                // Update progress bar
+                const progress = (this.currentScreen / this.totalScreens) * 100;
+                this.progressBar.style.width = `${progress}%`;
+
+                // Update screen counter
+                this.screenCounter.textContent = `${this.currentScreen}/${this.totalScreens}`;
+
+                // Update navigation buttons
+                this.backButton.disabled = this.currentScreen === 1;
+                this.nextButton.textContent = this.currentScreen === this.totalScreens ? 'Get Started!' : 'Next →';
+
+                // Update progress dots
+                this.progressDots.forEach((dot, index) => {
+                    const screenNumber = index + 1;
+                    if (screenNumber === this.currentScreen) {
+                        dot.classList.add('progress-dot-active');
+                        dot.classList.remove('progress-dot-inactive');
+                    } else {
+                        dot.classList.add('progress-dot-inactive');
+                        dot.classList.remove('progress-dot-active');
+                    }
+                });
+            }
+
+            complete() {
+                console.log('Onboarding completed!');
+                this.close();
+                // In real app, would save completion status to localStorage
+                localStorage.setItem('onboarding_completed', 'true');
+                this.showCompletionMessage();
+            }
+
+            skip() {
+                console.log('Onboarding skipped');
+                this.close();
+                // In real app, would save skip status to localStorage
+                localStorage.setItem('onboarding_skipped', 'true');
+            }
+
+            close() {
+                this.modal.classList.add('modal-exit');
+                setTimeout(() => {
+                    this.overlay.style.display = 'none';
+                    this.isVisible = false;
+                }, 300);
+            }
+
+            show() {
+                this.overlay.style.display = 'flex';
+                this.modal.classList.remove('modal-exit');
+                this.modal.classList.add('modal-enter');
+                this.isVisible = true;
+                setTimeout(() => this.modal.classList.remove('modal-enter'), 300);
+            }
+
+            showCompletionMessage() {
+                setTimeout(() => {
+                    alert('🎉 Welcome to Bet Intel! You\'re ready to start finding positive EV opportunities.');
+                }, 500);
+            }
+        }
+
+        // Initialize onboarding when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user has already seen onboarding
+            const hasCompleted = localStorage.getItem('onboarding_completed');
+            const hasSkipped = localStorage.getItem('onboarding_skipped');
+            
+            if (!hasCompleted && !hasSkipped) {
+                // Show onboarding after brief delay for new users
+                setTimeout(() => {
+                    new OnboardingManager();
+                }, 1000);
+            } else {
+                // Hide overlay and show trigger button for returning users
+                document.getElementById('onboardingOverlay').style.display = 'none';
+                document.getElementById('showOnboardingButton').addEventListener('click', () => {
+                    new OnboardingManager();
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

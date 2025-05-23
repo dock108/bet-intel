@@ -3,7 +3,7 @@
 ## MVP Dashboard Design Overview
 
 **Last Updated:** May 23, 2025  
-**Version:** 1.3  
+**Version:** 1.4  
 **Target Platform:** Web (Responsive), Mobile-first
 
 ## Design Philosophy
@@ -879,6 +879,409 @@ interface P2POddsRecommendation {
 
 ---
 
+## User Educational Onboarding Component Design
+
+### Onboarding Philosophy
+
+The onboarding component follows a **progressive education** approach that introduces users to P2P betting concepts without overwhelming them. The design prioritizes **immediate understanding** over comprehensive detail, with options to learn more at each step.
+
+### Onboarding Flow Structure
+```
+[Welcome] → [P2P Basics] → [EV Analysis] → [Using Recommendations] → [Manual Process] → [Success Tips] → [Complete]
+```
+
+### Progressive Screen Layout
+```
+┌─────────────────────────────────────┐
+│ [×] Skip                    [1/6]   │
+│                                     │
+│            [VISUAL ICON]            │
+│                                     │
+│          SCREEN TITLE               │
+│                                     │
+│     Brief, clear explanation        │
+│     (1-2 sentences maximum)         │
+│                                     │
+│    [Optional: Learn More Link]     │
+│                                     │
+│                                     │
+│ [← Back]              [Next →]     │
+└─────────────────────────────────────┘
+```
+
+### Individual Onboarding Screens
+
+#### Screen 1: Welcome & Introduction
+```
+┌─────────────────────────────────────┐
+│ [×] Skip                    [1/6]   │
+│                                     │
+│               👋                    │
+│                                     │
+│        Welcome to Bet Intel         │
+│                                     │
+│   We help you find better betting   │
+│   odds using mathematical analysis  │
+│   and peer-to-peer platforms.       │
+│                                     │
+│         [Learn about EV]            │
+│                                     │
+│                                     │
+│                           [Next →] │
+└─────────────────────────────────────┘
+```
+
+#### Screen 2: P2P Betting Basics
+```
+┌─────────────────────────────────────┐
+│ [×] Skip                    [2/6]   │
+│                                     │
+│               🤝                    │
+│                                     │
+│       What is P2P Betting?         │
+│                                     │
+│   Instead of betting against the    │
+│   house, you bet directly against   │
+│   other users at your own odds.     │
+│                                     │
+│      [Why is this better?]          │
+│                                     │
+│                                     │
+│ [← Back]              [Next →]     │
+└─────────────────────────────────────┘
+```
+
+#### Screen 3: EV Analysis Explained
+```
+┌─────────────────────────────────────┐
+│ [×] Skip                    [3/6]   │
+│                                     │
+│               📊                    │
+│                                     │
+│      How We Find Value Bets        │
+│                                     │
+│   We calculate fair odds using      │
+│   statistical models, then show     │
+│   you opportunities with +EV.       │
+│                                     │
+│        [EV Calculation FAQ]         │
+│                                     │
+│                                     │
+│ [← Back]              [Next →]     │
+└─────────────────────────────────────┘
+```
+
+#### Screen 4: Using Our Recommendations
+```
+┌─────────────────────────────────────┐
+│ [×] Skip                    [4/6]   │
+│                                     │
+│               🎯                    │
+│                                     │
+│     How to Use Recommendations      │
+│                                     │
+│   We show you the exact odds to     │
+│   set on each P2P platform for      │
+│   maximum expected value.           │
+│                                     │
+│       [See Example Recommendation]  │
+│                                     │
+│                                     │
+│ [← Back]              [Next →]     │
+└─────────────────────────────────────┘
+```
+
+#### Screen 5: Manual Process Walkthrough
+```
+┌─────────────────────────────────────┐
+│ [×] Skip                    [5/6]   │
+│                                     │
+│               📝                    │
+│                                     │
+│       Setting Odds Manually        │
+│                                     │
+│   Copy our recommended odds, go     │
+│   to the platform, find the event,  │
+│   and set your limit order.         │
+│                                     │
+│      [Step-by-Step Guide]           │
+│                                     │
+│                                     │
+│ [← Back]              [Next →]     │
+└─────────────────────────────────────┘
+```
+
+#### Screen 6: Success Tips & Completion
+```
+┌─────────────────────────────────────┐
+│ [×] Skip                    [6/6]   │
+│                                     │
+│               🏆                    │
+│                                     │
+│         Tips for Success            │
+│                                     │
+│   Start small, be patient with      │
+│   orders, and stick to positive     │
+│   EV opportunities only.            │
+│                                     │
+│         [Beginner's Guide]          │
+│                                     │
+│                                     │
+│ [← Back]          [Get Started!]   │
+└─────────────────────────────────────┘
+```
+
+### Onboarding Component Specifications
+
+#### Modal Overlay Design
+- **Background:** Semi-transparent dark overlay (opacity: 0.75)
+- **Modal Size:** 480px width, auto height (mobile: full width with padding)
+- **Animation:** Fade in/out with slight scale transform
+- **Position:** Centered on screen with scroll lock
+- **Close Options:** X button, skip link, escape key, background click
+
+#### Progress Indication
+- **Progress Bar:** Thin bar at top showing completion (1/6, 2/6, etc.)
+- **Step Indicators:** Circular dots showing current step
+- **Percentage:** Alternative numeric display (17%, 33%, 50%, etc.)
+- **Visual Feedback:** Smooth transitions between steps
+
+#### Content Structure
+```typescript
+interface OnboardingScreen {
+  id: number
+  title: string
+  icon: string                    // Emoji or icon identifier
+  description: string            // Main explanation (max 2 sentences)
+  learnMoreLink?: {              // Optional additional info
+    text: string
+    action: () => void
+  }
+  example?: OnboardingExample    // Optional interactive example
+}
+
+interface OnboardingExample {
+  type: 'recommendation' | 'calculation' | 'process'
+  data: any
+  interactive: boolean
+}
+```
+
+#### Navigation Controls
+- **Next Button:** Primary blue, prominent placement
+- **Back Button:** Secondary gray, smaller
+- **Skip Link:** Text link, top-right corner
+- **Progress Navigation:** Click dots to jump to specific screens
+- **Keyboard Support:** Arrow keys for navigation, ESC to close
+
+### Interactive Examples
+
+#### EV Calculation Example (Screen 3)
+```
+┌─────────────────────────────────────┐
+│ 📊 Example: Lakers @ Warriors       │
+│                                     │
+│ Fair Probability: 41.2%             │
+│ DraftKings Odds: +150 (40.0%)       │
+│ → Edge: +1.2% = Positive EV! ✅     │
+│                                     │
+│ [Show Full Calculation]             │
+└─────────────────────────────────────┘
+```
+
+#### Recommendation Example (Screen 4)
+```
+┌─────────────────────────────────────┐
+│ 🎯 Recommended: Lakers +165         │
+│                                     │
+│ 🏆 Novig: Set +165 (fills in 20m)   │
+│ 📈 Sporttrade: Set +160 (30m)       │
+│ ⚡ ProphetX: Set +158 (45m)         │
+│                                     │
+│ [Try Copy Function]                 │
+└─────────────────────────────────────┘
+```
+
+#### Manual Process Example (Screen 5)
+```
+┌─────────────────────────────────────┐
+│ 📝 Step-by-Step Process              │
+│                                     │
+│ 1. Copy odds: +165 [Copy]           │
+│ 2. Go to Novig →                    │
+│ 3. Find Lakers @ Warriors           │
+│ 4. Select "Lakers Win"              │
+│ 5. Enter +165 odds                  │
+│ 6. Submit order ✅                  │
+└─────────────────────────────────────┘
+```
+
+### Onboarding Triggers
+
+#### First-Time Users
+- **Automatic Display:** Show on first app visit
+- **Delay:** 2-second delay after page load to avoid jarring experience
+- **One-Time:** Never show again after completion or skip
+- **Storage:** Use localStorage to track completion status
+
+#### Returning Users
+- **Help Menu:** Always accessible from main navigation
+- **Settings Page:** Link in user preferences
+- **Contextual Help:** "Need help?" buttons on complex screens
+- **Feature Updates:** Show relevant screens when new features launch
+
+#### Conditional Triggers
+- **User Confusion:** Show after multiple failed actions
+- **Feature Introduction:** Display when accessing P2P recommendations for first time
+- **Error Recovery:** Offer onboarding after user encounters errors
+- **User Request:** Manual trigger from help system
+
+### Educational Content Strategy
+
+#### Beginner-Friendly Language
+- **Avoid Jargon:** Use plain English, explain technical terms
+- **Short Sentences:** Maximum 15 words per sentence
+- **Active Voice:** "We calculate" instead of "calculations are performed"
+- **Personal Pronouns:** "You bet" instead of "users bet"
+
+#### Visual Communication
+- **Emoji Icons:** Universal symbols for quick recognition
+- **Color Coding:** Green for positive, red for negative, blue for actions
+- **Progressive Complexity:** Start simple, add detail gradually
+- **Consistent Metaphors:** Use same analogies throughout
+
+#### Learning Reinforcement
+- **Immediate Examples:** Show real calculations and recommendations
+- **Interactive Elements:** Let users try copy/paste functionality
+- **Success Indicators:** Clear "✅" symbols for completed understanding
+- **Practice Opportunities:** Safe environment to test learning
+
+### Mobile Optimization
+
+#### Mobile Onboarding Layout
+```
+┌─────────────────────────────────────┐
+│ [×] Skip              [2/6] ●●○○○○ │
+├─────────────────────────────────────┤
+│                                     │
+│              🤝                     │
+│                                     │
+│       What is P2P Betting?         │
+│                                     │
+│   Instead of betting against the    │
+│   house, you bet directly against   │
+│   other users at your own odds.     │
+│                                     │
+│      [Why is this better?]          │
+│                                     │
+├─────────────────────────────────────┤
+│ [← Back]              [Next →]     │
+└─────────────────────────────────────┘
+```
+
+#### Mobile-Specific Features
+- **Full-Screen Modal:** Use entire screen on mobile devices
+- **Gesture Support:** Swipe left/right to navigate between screens
+- **Touch Optimization:** Large tap targets (44px minimum)
+- **Thumb Navigation:** Bottom-aligned controls for easy reach
+
+### Accessibility Features
+
+#### Screen Reader Support
+- **ARIA Labels:** Descriptive labels for all interactive elements
+- **Reading Order:** Logical tab sequence through content
+- **Live Regions:** Announce screen changes to assistive technology
+- **Alternative Text:** Descriptive text for all icons and images
+
+#### Keyboard Navigation
+- **Tab Order:** Logical progression through interactive elements
+- **Arrow Keys:** Navigate between screens
+- **Enter/Space:** Activate buttons and links
+- **Escape Key:** Close onboarding modal
+
+#### Visual Accessibility
+- **High Contrast:** Ensure 4.5:1 contrast ratio minimum
+- **Font Scaling:** Support up to 200% zoom without layout breaks
+- **Focus Indicators:** Clear visual focus states
+- **Color Independence:** Don't rely solely on color for meaning
+
+### Analytics & Optimization
+
+#### Tracking Metrics
+- **Completion Rate:** Percentage of users who complete full onboarding
+- **Drop-off Points:** Which screens users skip or abandon
+- **Time per Screen:** How long users spend reading each screen
+- **Return Rate:** How often users access onboarding again
+
+#### A/B Testing Opportunities
+- **Screen Order:** Test different sequence of information
+- **Content Length:** Compare brief vs detailed explanations
+- **Visual Style:** Test different icon styles and layouts
+- **Call-to-Action:** Experiment with button text and placement
+
+#### Optimization Strategies
+- **Progressive Disclosure:** Show additional detail links for interested users
+- **Personalization:** Adapt content based on user behavior
+- **Contextual Help:** Surface relevant onboarding screens when needed
+- **Feedback Integration:** Incorporate user suggestions for improvements
+
+### Technical Implementation
+
+#### State Management
+```typescript
+interface OnboardingState {
+  isActive: boolean
+  currentScreen: number
+  totalScreens: number
+  hasCompleted: boolean
+  hasSkipped: boolean
+  lastViewed: Date
+}
+
+interface OnboardingProps {
+  onComplete: () => void
+  onSkip: () => void
+  onScreenChange: (screenId: number) => void
+  initialScreen?: number
+}
+```
+
+#### Local Storage Schema
+```typescript
+interface OnboardingStorage {
+  completed: boolean
+  skipped: boolean
+  completionDate?: string
+  screenProgress: number[]
+  version: string  // For handling onboarding updates
+}
+```
+
+#### Animation Configuration
+- **Transition Duration:** 300ms for screen changes
+- **Easing Function:** Ease-out for natural feel
+- **Loading States:** Skeleton screens during content fetch
+- **Error Handling:** Graceful fallback for failed content loads
+
+### Integration Points
+
+#### Dashboard Integration
+- **First Visit:** Trigger onboarding after dashboard loads
+- **Help Button:** Prominent help icon in header
+- **Progress Tracking:** Mark onboarding completion in user analytics
+
+#### Feature Integration
+- **P2P Recommendations:** Show mini-onboarding when first accessing
+- **EV Analysis:** Contextual help explaining calculations
+- **Search Results:** Tooltip guidance for new users
+
+#### Settings Integration
+- **Onboarding Toggle:** Allow users to reset/replay onboarding
+- **Help Center:** Link to expanded educational content
+- **Tutorial Mode:** Optional guided tour of main features
+
+---
+
 ## Color Palette & Visual Design
 
 ### Primary Colors
@@ -1027,6 +1430,20 @@ interface RecommendedOddsComponent {
 }
 ```
 
+#### 10. **Onboarding Component**
+```typescript
+interface OnboardingComponent {
+  screens: OnboardingScreen[]
+  currentScreen: number
+  isVisible: boolean
+  onComplete: () => void
+  onSkip: () => void
+  onScreenChange: (screenId: number) => void
+  canGoBack: boolean
+  canGoNext: boolean
+}
+```
+
 ## Data Flow & API Integration
 
 ### Primary API Endpoints Used
@@ -1036,6 +1453,7 @@ interface RecommendedOddsComponent {
 4. **`GET /api/events/{event_id}/analysis`** - Detailed event analysis
 5. **`POST /api/alerts`** - Create limit order alerts
 6. **`GET /api/p2p/recommendations/{event_id}`** - P2P platform odds recommendations
+7. **`GET /api/onboarding/content`** - Onboarding screen content and examples
 
 ### Real-time Updates Strategy
 - **Initial Load:** Full data fetch
@@ -1133,6 +1551,11 @@ interface RecommendedOddsComponent {
     - EVExplanation.tsx
     - LimitOrder.tsx
     - RecommendedOdds.tsx
+  /onboarding
+    - OnboardingModal.tsx
+    - OnboardingScreen.tsx
+    - OnboardingProgress.tsx
+    - OnboardingExamples.tsx
   /shared
     - Button.tsx
     - Card.tsx
@@ -1180,6 +1603,7 @@ const tokens = {
 - [ ] Search & Results component design ✓
 - [ ] Detailed Event View design ✓
 - [ ] Recommended Odds Component design ✓
+- [ ] Educational Onboarding Component design ✓
 
 ---
 

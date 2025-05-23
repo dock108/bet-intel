@@ -25,6 +25,7 @@
 - [x] **Odds Search Bar**
 - [x] **Odds Results Display (Detailed Event View)**
 - [x] **Recommended Odds Component (P2P Manual Guidance)**
+- [x] **Educational Onboarding Component (User Education & P2P Guidance)**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 
@@ -34,20 +35,16 @@
 - [ ] **Bayesian Odds Calculation (Premium)**
 - [ ] **Monte Carlo Simulation (Premium)**
 
+## 🚧 Frontend Development (Remaining)
+
+- [ ] **Custom Limit Order Input Form**
+- [ ] **Alerts Management Dashboard**
+- [ ] **User Settings & Preferences Panel**
+
 ## 🚧 API & Backend Enhancements
 
 - [ ] **User Authentication Setup (Optional for MVP)**
 - [ ] **User Preferences Management (Optional for MVP)**
-
-## 🚧 Frontend Development (v0.dev)
-
-- [ ] **Custom Limit Order Input Form**
-- [ ] **Limit Order Monitoring UI & Notifications**
-
-## 🚧 Notifications & Affiliate Integration
-
-- [ ] **Notification Infrastructure Setup**
-- [ ] **Affiliate Setup (Sportsbooks & P2P)**
 
 ## 🚧 Documentation & Operations
 
