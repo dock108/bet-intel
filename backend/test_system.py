@@ -15,7 +15,7 @@ def test_configuration():
     """Test configuration loading"""
     print("🔧 Testing configuration...")
     try:
-        from config import settings
+        from .config import settings
         print("   ✅ Configuration loaded successfully")
         print(f"   📊 Default sport: {settings.default_sport}")
         print(f"   🌐 Default regions: {settings.default_regions}")
@@ -30,7 +30,7 @@ def test_database():
     """Test database setup and models"""
     print("\n💾 Testing database...")
     try:
-        from database import initialize_database, SessionLocal, EventModel, BookmakerModel
+        from .database import initialize_database, SessionLocal, EventModel, BookmakerModel
         
         # Initialize database
         initialize_database()
@@ -67,7 +67,7 @@ def test_api_client_structure():
     """Test API client structure (without making actual requests)"""
     print("\n🌐 Testing API client structure...")
     try:
-        from odds_api_client import OddsAPIClient
+        from .odds_api_client import OddsAPIClient
         
         print("   ✅ API client classes imported successfully")
         
@@ -90,7 +90,7 @@ def test_polling_structure():
     """Test polling service structure"""
     print("\n🔄 Testing polling service structure...")
     try:
-        from odds_poller import OddsPoller
+        from .odds_poller import OddsPoller
         
         print("   ✅ OddsPoller class imported successfully")
         
@@ -113,7 +113,7 @@ def test_fastapi_structure():
     """Test FastAPI application structure"""
     print("\n🚀 Testing FastAPI application...")
     try:
-        from main import app
+        from .main import app
         
         print("   ✅ FastAPI app imported successfully")
         

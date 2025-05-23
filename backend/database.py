@@ -7,7 +7,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.sql import func
 
-from config import settings
+from backend.config import settings
+
+import logging
+logger = logging.getLogger(__name__)
 
 # Create database engine
 engine = create_engine(

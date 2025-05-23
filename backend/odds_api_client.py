@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Any
 from datetime import datetime, timezone
 import time
 
-from config import settings
+from backend.config import settings
 
 # Configure logger
 logger = logging.getLogger(__name__)

@@ -9,13 +9,12 @@ from sqlalchemy.orm import Session
 import logging
 from typing import List
 
-from .config import settings
-from .database import get_db, initialize_database, Event as EventModel, OddsSnapshot as OddsSnapshotModel, PollingLog as PollingLogModel
-from .odds_poller import OddsPoller
-from .odds_analyzer import (
+from backend.config import settings
+from backend.database import get_db, initialize_database, EventModel, OddsSnapshotModel, PollingLogModel
+from backend.odds_poller import OddsPoller
+from backend.odds_analyzer import (
     aggregate_event_odds,
     find_positive_ev_opportunities,
-    AggregatedEventOdds, # To be used as response model for a potential future endpoint
     PotentialOpportunity
 )
 

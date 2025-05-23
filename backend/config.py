@@ -56,7 +56,10 @@ class Settings(BaseSettings):
     
     # Logging
     log_level: str = "INFO"
-    
+
+    # P2P Platform Settings
+    P2P_COMMISSION_RATE: float = 0.02  # Default 2% commission for P2P platforms
+
     # Affiliate Settings
     affiliate_tracking_enabled: bool = True
     draftkings_affiliate_id: Optional[str] = None
@@ -69,7 +72,7 @@ class Settings(BaseSettings):
     bayesian_confidence_threshold: float = 0.8
 
     class Config:
-        env_file = ".env"
+        env_file = "backend/.env"
         env_file_encoding = "utf-8"
         case_sensitive = False
 

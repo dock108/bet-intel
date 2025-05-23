@@ -9,12 +9,12 @@ from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
 
-from database import (
+from backend.database import (
     SessionLocal, EventModel, BookmakerModel, 
     OddsSnapshotModel, PollingLogModel, initialize_database
 )
-from odds_api_client import OddsAPIClient, OddsAPIError, RateLimitError
-from config import settings
+from backend.odds_api_client import OddsAPIClient, OddsAPIError, RateLimitError
+from backend.config import settings
 
 # Configure logger
 logging.basicConfig(level=getattr(logging, settings.log_level.upper()))

@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 import json
 
-from .database import Event, OddsSnapshot, Bookmaker, get_db
-from .config import get_settings
+from backend.database import EventModel, OddsSnapshotModel, BookmakerModel
+from backend.config import get_settings
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -60,14 +60,14 @@ def aggregate_event_odds(db: Session, event_db_id: int) -> Optional[AggregatedEv
     """
     Aggregates all odds snapshots for a given event from the database.
     """
-    event = db.query(Event).filter(Event.id == event_db_id).first()
+    event = db.query(EventModel).filter(EventModel.id == event_db_id).first()
     if not event:
         logger.warning(f"Event with DB ID {event_db_id} not found for aggregation.")
         return None
 
     logger.info(f"Aggregating odds for event: {event.external_id} ({event.home_team} vs {event.away_team})")
 
-    snapshots = db.query(OddsSnapshot).filter(OddsSnapshot.event_id == event_db_id).order_by(OddsSnapshot.bookmaker_id, OddsSnapshot.last_update.desc()).all()
+    snapshots = db.query(OddsSnapshotModel).filter(OddsSnapshotModel.event_id == event_db_id).order_by(OddsSnapshotModel.bookmaker_id, OddsSnapshotModel.last_update.desc()).all()
 
     if not snapshots:
         logger.info(f"No odds snapshots found for event {event.external_id}")
@@ -85,7 +85,7 @@ def aggregate_event_odds(db: Session, event_db_id: int) -> Optional[AggregatedEv
     bookmakers_data_map: Dict[int, BookmakerEventOdds] = {}
 
     for snap in snapshots:
-        bookmaker_db = db.query(Bookmaker).filter(Bookmaker.id == snap.bookmaker_id).first()
+        bookmaker_db = db.query(BookmakerModel).filter(BookmakerModel.id == snap.bookmaker_id).first()
         if not bookmaker_db:
             logger.warning(f"Bookmaker with ID {snap.bookmaker_id} not found for snapshot {snap.id}. Skipping.")
             continue
@@ -155,8 +155,8 @@ def calculate_reference_odds(db: Session, aggregated_event: AggregatedEventOdds,
     logger.debug(f"Calculating reference odds for outcome '{target_outcome_name}' in market '{market_key}' for event '{aggregated_event.event_id}'")
 
     active_us_non_p2p_bookmaker_keys = {
-        b.key for b in db.query(Bookmaker)
-        .filter(Bookmaker.active.is_(True), Bookmaker.is_p2p.is_(False), Bookmaker.region == 'us')
+        b.key for b in db.query(BookmakerModel)
+        .filter(BookmakerModel.active.is_(True), BookmakerModel.is_p2p.is_(False), BookmakerModel.region == 'us')
         .all()
     }
 
@@ -263,7 +263,7 @@ def notify_opportunity(opportunity: PotentialOpportunity):
     Placeholder for a notification function.
     Currently, it just logs the opportunity.
     """
-    logger.info(f"NOTIFICATION - New Opportunity Detected: {opportunity.json(indent=2)}")
+    logger.info(f"NOTIFICATION - New Opportunity Detected: {opportunity.model_dump_json(indent=2)}")
 
 if __name__ == '__main__':
     # Example usage (for testing purposes)
@@ -273,7 +273,7 @@ if __name__ == '__main__':
     # Mock data or test DB calls would go here
     # example_event_id = "some_event_external_id"
     # with next(get_db()) as db:
-    #     event = db.query(Event).filter(Event.external_id == example_event_id).first()
+    #     event = db.query(EventModel).filter(EventModel.external_id == example_event_id).first()
     #     if event:
     #         aggregated = aggregate_event_odds(db, event.id)
     #         if aggregated:
