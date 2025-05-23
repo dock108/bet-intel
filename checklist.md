@@ -1,3 +1,12 @@
+## Repository Setup & Infrastructure
+- [x] **Git Repository Initialization:** Initialize Git repository and verify setup.
+- [x] **Project Structure Creation:** Create backend, frontend, docs, and tests directories.
+- [x] **Gitignore Configuration:** Comprehensive .gitignore for Python, React, and development environments.
+- [x] **README.md Creation:** Initial project documentation with setup instructions.
+- [x] **Development Environment Preparation:** Basic project structure ready for development.
+- [x] **Environment Template Creation:** Create .env.example files for configuration.
+- [x] **Initial Dependencies Setup:** Create requirements.txt and package.json templates.
+
 ## Odds & Data Acquisition
 - [ ] **Pinnacle API Setup:** Obtain credentials and verify basic odds retrieval.
 - [ ] **Pinnacle Odds Polling:** Implement regular polling and storage of odds.
