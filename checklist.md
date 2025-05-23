@@ -26,6 +26,7 @@
 - [x] **Odds Results Display (Detailed Event View)**
 - [x] **Recommended Odds Component (P2P Manual Guidance)**
 - [x] **Educational Onboarding Component (User Education & P2P Guidance)**
+- [x] **Frontend-Backend API Integration (Live Odds & EV Data)**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 
