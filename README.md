@@ -87,7 +87,7 @@ bet-intel/
    ```bash
    npm start
    ```
-   
+
    The frontend will be available at `http://localhost:3000`
 
 ### Full Application Access
@@ -168,28 +168,43 @@ The main Dashboard (`/dashboard`) provides a comprehensive view of real-time EV 
 #### OpportunityCard Component
 Each betting opportunity is displayed using the reusable `OpportunityCard` component featuring:
 
+**Enhanced Design & Functionality:**
+- **Descriptive Outcome Labels**: Clear labels like "Red Sox Win", "Orioles Win" instead of generic codes
+- **Smart EV Sorting**: Bookmakers automatically sorted by Expected Value (highest to lowest)
+- **Accurate Best Line Logic**: Shows actual bookmaker with highest positive EV, or "No Positive EV Available"
+- **Sport Icons**: Visual indicators (⚾ for baseball, 🏈 for football) for quick identification
+
 **EV Indicators:**
 - 🔥 **HOT**: EV > 2% (High-value opportunities)
 - ✅ **SAFE**: EV > 0% (Positive expected value)
 - ⚠️ **CAUTION**: EV > -2% (Near break-even)
 - ❌ **AVOID**: EV < -2% (Negative expected value)
 
-**Matchup Details:**
-- Team names and sport classification
-- Event start time and date
-- Best available EV percentage and dollar value
-- Positive EV opportunity count
+**Recommended P2P Bet Section:**
+- **Multiple Outcome Display**: Shows all profitable outcomes (A, B, C) when available
+- **Calculated P2P Odds**: Automatically applies 2% commission + 2.5% EV safety buffer
+- **Clear Outcome Descriptions**: Shows exactly which team/outcome to bet on for each opportunity
+- **Target EV**: Aims for 2.5% positive EV after all fees and buffers (between 2-3% range)
+- **Dual Information**: For positive EV bets, shows both original odds/EV and fee-adjusted odds/EV
+- **Adjusted EV Display**: Expected value after all fees and buffers applied
+- **Affiliate Integration Ready**: Placeholder buttons for "Place Bets on [P2P Exchange Placeholder]"
+- **Alternative Options**: Secondary button for additional P2P platforms
 
-**Recommended Opportunities:**
-- Best betting line identification
-- Recommended stake size (2-5% of bankroll)
-- Bookmaker/exchange source
+**Sorted Bookmaker Analysis:**
+- **EV-Based Sorting**: All bookmakers ranked by their best available EV (highest first)
+- **P2P Fee Transparency**: P2P exchanges show real EV after 2% fees are applied
+- **Dual Display for P2P**: Shows both original odds and fee-adjusted odds
+- **Fee Impact Warnings**: Clear alerts when P2P opportunities become negative EV after fees
+- **Visual EV Indicators**: ✅ for positive EV bookmakers, ❌ for negative EV (after fees for P2P)
+- **Descriptive Bet Labels**: Instead of "outcome_A", shows "Red Sox Win: +120"
+- **EV Badges**: Color-coded badges showing each bookmaker's best EV percentage
+- **P2P Identification**: Special badges and color coding for peer-to-peer exchanges
+- **Expandable View**: "Show X more bookmakers" for comprehensive analysis
 
-**Detailed Analysis:**
-- Up to 3 top bookmakers with odds comparison
-- P2P exchange identification with special badges
-- Individual outcome EV percentages
-- Expandable view for additional bookmakers
+**Best Line Summary:**
+- **Accurate Best Line**: Shows bookmaker with actual highest positive EV
+- **No False Positives**: Clearly states "No Positive EV Available" when applicable
+- **Quick Metrics**: Best EV percentage and positive opportunity count at a glance
 
 ### Real-Time Features
 - **Auto-refresh**: Data updates every 3 minutes automatically
@@ -220,6 +235,34 @@ Each betting opportunity is displayed using the reusable `OpportunityCard` compo
 - Responsive design works across desktop and mobile devices
 - Auto-refresh functionality updates data every 3 minutes
 - Error handling and loading states implemented
+
+### P2P Calculation Methodology
+The platform applies a transparent approach to P2P exchange analysis:
+
+**Fee Transparency (Real-Time Display):**
+1. **Original Odds Display**: Shows the posted odds on P2P exchanges
+2. **Fee-Adjusted Odds**: Displays odds after applying 2% commission
+3. **Real EV Calculation**: Shows actual expected value after fees
+4. **Impact Warnings**: Alerts when originally positive EV becomes negative after fees
+
+**P2P Recommendation Logic:**
+1. **Commission Removal**: Subtracts 2% for typical P2P exchange fees
+2. **Safety Buffer**: Additional 2.5% EV buffer to account for:
+   - Market movement between analysis and bet placement
+   - Minor calculation variations
+   - Risk management for user protection
+3. **Target EV**: Aims for 2.5% positive EV after all adjustments (optimal 2-3% range)
+4. **Multiple Outcomes**: Displays all profitable outcomes (A, B, C) when multiple opportunities exist
+5. **Adjusted Odds Display**: Shows recommended odds after all adjustments
+6. **Only True Positive EV**: Only displays P2P recommendations when final EV remains positive after all fees
+
+**Sorting Priority**: P2P bookmakers are sorted by their fee-adjusted EV, ensuring traditional sportsbooks with positive EV rank above P2P exchanges with negative EV after fees.
+
+### Affiliate Integration Framework
+- **Placeholder System**: Ready-to-implement affiliate link structure
+- **Exchange Flexibility**: Supports multiple P2P platforms simultaneously
+- **Clear CTAs**: Dedicated action buttons for immediate bet placement
+- **Alternative Options**: Secondary pathways for user choice and comparison
 
 ### Methodology
 The platform uses a **7-Step No-Vig methodology** for EV calculations across 6+ core bookmakers, providing accurate expected value assessments for both traditional sportsbooks and P2P exchanges.
