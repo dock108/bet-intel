@@ -3,7 +3,7 @@
 ## MVP Dashboard Design Overview
 
 **Last Updated:** May 23, 2025  
-**Version:** 1.0  
+**Version:** 1.1  
 **Target Platform:** Web (Responsive), Mobile-first
 
 ## Design Philosophy
@@ -98,6 +98,256 @@ The MVP dashboard follows a **data-first, minimal complexity** approach prioriti
 └─────────────────────────────────────┘
 ```
 
+## Odds Search & Results Component Design
+
+### Search Component Layout
+```
+┌─────────────────────────────────────┐
+│ 🔍 [Search teams, events, sports...] │
+│                               [🔧] │ 
+├─────────────────────────────────────┤
+│ 🏀 NBA  🏈 NFL  ⚾ MLB  🏒 NHL    │
+│                                     │
+│ [All Books] [EV > $5] [Today Only]  │
+└─────────────────────────────────────┘
+```
+
+### Search Results Layout
+```
+┌─────────────────────────────────────┐
+│ 📊 15 results • Sort: Best EV ▼     │
+├─────────────────────────────────────┤
+│ 🏀 Lakers @ Warriors  7:30 PM      │
+│ Pin: +145 | DK: +150 | FD: +140    │
+│ EV: +$24.5 (W) | +$21.4 (NV) | +$18│
+│ [View Details]               [📍]   │
+├─────────────────────────────────────┤
+│ 🏈 Chiefs @ Bills  8:20 PM          │
+│ Pin: -108 | DK: -110 | FD: -105    │
+│ EV: +$12.3 (W) | +$10.2 (NV) | +$8 │
+│ [View Details]               [📍]   │
+└─────────────────────────────────────┘
+```
+
+### Search Component Specifications
+
+#### Search Input Field
+- **Placeholder:** "Search teams, events, sports..."
+- **Auto-complete:** Real-time suggestions as user types
+- **Search Scope:** Team names, event descriptions, sport types
+- **Keyboard Support:** Enter to search, ESC to clear
+- **Voice Search:** Microphone icon for mobile accessibility
+
+#### Quick Sport Filters
+- **Visual Design:** Horizontal pill buttons with sport icons
+- **Sports Covered:** NBA (🏀), NFL (🏈), MLB (⚾), NHL (🏒), +More
+- **Interaction:** Single-tap to filter, tap again to remove filter
+- **Mobile Behavior:** Horizontal scroll for additional sports
+
+#### Advanced Filter Panel
+```
+┌─────────────────────────────────────┐
+│ 📅 Time Range                       │
+│ ● Today  ○ Tomorrow  ○ This Week    │
+│                                     │
+│ 📊 Bookmakers                       │
+│ ☑ Pinnacle  ☑ DraftKings  ☑ FanDuel│
+│ ☑ Caesars   ☐ BetMGM      ☐ Betway │
+│                                     │
+│ 💰 EV Threshold                     │
+│ [___$5___] Minimum Expected Value   │
+│                                     │
+│ [Clear All]              [Apply]    │
+└─────────────────────────────────────┘
+```
+
+### Search Results Specifications
+
+#### Results Header
+- **Results Count:** "📊 15 results found"
+- **Sort Options:** Best EV, Time, Sport, Alphabetical
+- **View Toggle:** List view ⇄ Grid view (desktop only)
+- **Refresh Button:** Manual refresh with loading indicator
+
+#### Search Result Card
+```
+┌─────────────────────────────────────┐
+│ 🏀 NBA • Today, 7:30 PM ET          │
+│ Lakers @ Warriors                   │
+│                                     │
+│ 📊 Odds Comparison                  │
+│ ┌─────────────────────────────────┐ │
+│ │ Pin  DK   FD   Best EV          │ │
+│ │+145 +150 +140  Lakers +$24.50  │ │
+│ │-165 -170 -160  Warriors -$18.20│ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ 💡 EV Analysis                      │
+│ Weighted: +$24.50 | No-Vig: +$21.40│
+│ Standard: +$18.20 | Confidence: High│
+│                                     │
+│ [View Full Analysis] [📍 Watchlist] │
+└─────────────────────────────────────┘
+```
+
+#### Compact Result Item (Mobile)
+```
+┌─────────────────────────────────────┐
+│ 7:30 PM  🏀  Lakers @ Warriors      │
+│ Best: +$24.5 (DK +150) • 3 books   │
+│ W: +$24.5 | NV: +$21.4 | S: +$18.2 │
+│                              [📍]   │
+└─────────────────────────────────────┘
+```
+
+### Search Interaction Patterns
+
+#### Search Flow
+1. **Initial State:** Empty search with sport filter pills visible
+2. **Typing:** Real-time suggestions dropdown appears
+3. **Selection:** Auto-search on suggestion click or Enter key
+4. **Results:** Immediate display with loading states
+5. **Refinement:** Filters update results without page reload
+
+#### Auto-complete Suggestions
+```
+┌─────────────────────────────────────┐
+│ 🔍 laker                            │
+├─────────────────────────────────────┤
+│ 🏀 Lakers @ Warriors (Tonight)      │
+│ 🏀 Lakers vs Celtics (Tomorrow)     │
+│ 📊 Los Angeles Lakers (Team)        │
+│ 🏀 NBA (League)                     │
+└─────────────────────────────────────┘
+```
+
+#### Filter Combinations
+- **Sport + Time:** "NBA games today"
+- **Team + Bookmaker:** "Lakers games on DraftKings"
+- **EV + Time:** "High EV bets tonight"
+- **Custom:** User-defined filter combinations
+
+### Data Integration & API Usage
+
+#### Primary Endpoints
+- **`GET /api/ev-opportunities`** - Main search with query parameters
+- **`GET /api/events`** - Event auto-complete suggestions
+- **`GET /api/bookmakers`** - Available bookmaker options
+
+#### Search Parameters
+```typescript
+interface SearchParams {
+  query?: string              // Text search
+  sport_key?: string         // Sport filter
+  bookmaker_keys?: string[]  // Bookmaker filter
+  min_ev_threshold?: number  // EV filter
+  time_range?: 'today' | 'tomorrow' | 'week'
+  sort_by?: 'ev' | 'time' | 'sport'
+  limit?: number
+  offset?: number
+}
+```
+
+#### Real-time Search
+- **Debounced Input:** 300ms delay to prevent excessive API calls
+- **Cache Strategy:** Cache results for 30 seconds
+- **Background Updates:** Refresh results every 60 seconds
+- **Offline Handling:** Show cached results with offline indicator
+
+### Loading & Empty States
+
+#### Loading States
+```
+┌─────────────────────────────────────┐
+│ 🔍 Searching...                     │
+│                                     │
+│ ┌─────────────────────────────────┐ │
+│ │ ▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │ │ ← Skeleton loading
+│ │ ▓▓▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░ │ │
+│ │ ▓▓▓░░░░░░░░░░░░░░░░░░░░░░░░░░░░ │ │
+│ └─────────────────────────────────┘ │
+└─────────────────────────────────────┘
+```
+
+#### Empty Search State
+```
+┌─────────────────────────────────────┐
+│          🔍                         │
+│    Search for Events & Odds         │
+│                                     │
+│  Try searching for:                 │
+│  • "Lakers" - specific teams        │
+│  • "NBA" - sports leagues          │
+│  • "tonight" - time-based          │
+│                                     │
+│    [Popular: Lakers, Chiefs, etc.]  │
+└─────────────────────────────────────┘
+```
+
+#### No Results State
+```
+┌─────────────────────────────────────┐
+│          🤷‍♂️                         │
+│    No Results Found                 │
+│                                     │
+│  No events match your search.       │
+│  Try adjusting your filters or      │
+│  search for different terms.        │
+│                                     │
+│  [Clear Filters] [Try Popular Terms]│
+└─────────────────────────────────────┘
+```
+
+### Mobile Optimization
+
+#### Mobile Search Interface
+- **Full-width search bar** with prominent tap target
+- **Bottom sheet filters** instead of sidebar
+- **Swipe gestures** for quick actions
+- **Voice search integration** for hands-free operation
+
+#### Mobile Results Display
+- **Compact card design** optimized for scrolling
+- **Quick action buttons** (Watchlist, Share)
+- **Infinite scroll** for seamless browsing
+- **Pull-to-refresh** for manual updates
+
+### Accessibility Features
+
+#### Keyboard Navigation
+- **Tab order:** Search → Filters → Results → Actions
+- **Arrow keys:** Navigate through suggestions and results
+- **Enter/Space:** Select items and trigger actions
+- **Escape:** Close modals and clear search
+
+#### Screen Reader Support
+- **ARIA labels:** Descriptive labels for all interactive elements
+- **Live regions:** Announce search results and updates
+- **Role attributes:** Proper semantic markup for lists and buttons
+- **Alt text:** Descriptive text for all icons and images
+
+#### Visual Accessibility
+- **High contrast mode** support
+- **Focus indicators** clearly visible
+- **Text scaling** up to 200% without layout breaks
+- **Color-blind friendly** color combinations
+
+### Performance Considerations
+
+#### Search Optimization
+- **Client-side caching** of frequent searches
+- **Prefetch popular events** during idle time
+- **Lazy loading** of images and non-critical content
+- **Request batching** to minimize API calls
+
+#### Rendering Performance
+- **Virtual scrolling** for large result sets
+- **Image optimization** with WebP format
+- **CSS containment** for better paint performance
+- **JavaScript code splitting** by feature
+
+---
+
 ## Color Palette & Visual Design
 
 ### Primary Colors
@@ -185,6 +435,28 @@ interface FilterOptions {
   bookmakers: string[]
   evThreshold: number
   timeRange: TimeRange
+}
+```
+
+#### 5. **Search Component**
+```typescript
+interface SearchComponent {
+  query: string
+  suggestions: SearchSuggestion[]
+  filters: FilterOptions
+  onSearch: (query: string) => void
+  onFilter: (filters: FilterOptions) => void
+}
+```
+
+#### 6. **Search Results Component**
+```typescript
+interface SearchResults {
+  results: SearchResult[]
+  totalCount: number
+  loading: boolean
+  sortBy: SortOption
+  viewMode: 'list' | 'grid'
 }
 ```
 
@@ -279,6 +551,11 @@ interface FilterOptions {
     - QuickStatsBar.tsx
     - EventList.tsx
     - FilterPanel.tsx
+  /search
+    - SearchBar.tsx
+    - SearchResults.tsx
+    - SearchFilters.tsx
+    - ResultCard.tsx
   /shared
     - Button.tsx
     - Card.tsx
@@ -323,6 +600,7 @@ const tokens = {
 - [ ] Accessible design patterns ✓
 - [ ] Performance-optimized approach ✓
 - [ ] Scalable component architecture ✓
+- [ ] Search & Results component design ✓
 
 ---
 

@@ -22,6 +22,7 @@
 - [x] **Multiple EV Calculations (Standard, No-Vig, Weighted Fair Odds)**
 - [x] **Enhanced Opportunities Endpoint (GET /api/ev-opportunities with pagination and filtering)**
 - [x] **Dashboard Wireframe & Responsive Optimization**
+- [x] **Odds Search Bar**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 
@@ -38,7 +39,6 @@
 
 ## 🚧 Frontend Development (v0.dev)
 
-- [ ] **Odds Search Bar**
 - [ ] **Odds Results Display**
 - [ ] **Recommended Odds Component**
 - [ ] **Custom Limit Order Input Form**

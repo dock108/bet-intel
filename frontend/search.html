@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bet Intel Search - MVP Wireframe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .card-hover { transition: all 0.2s ease-in-out; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .skeleton { animation: skeleton-loading 1s linear infinite alternate; }
+        @keyframes skeleton-loading {
+            0% { background-color: #e5e7eb; }
+            100% { background-color: #f3f4f6; }
+        }
+        .suggestion-item:hover { background-color: #f8fafc; }
+        .filter-active { background-color: #2563eb; color: white; }
+        .search-highlight { background-color: #fef3c7; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Brand -->
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                        BI
+                    </div>
+                    <h1 class="ml-3 text-xl font-bold text-gray-900">Bet Intel</h1>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="index.html" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Dashboard</a>
+                    <a href="search.html" class="text-blue-600 border-b-2 border-blue-600 text-sm font-medium">Search</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Alerts</a>
+                    <a href="#" class="text-gray-500 hover:text-gray-700 text-sm font-medium">More</a>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Search Section -->
+        <section class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <!-- Search Header -->
+                <div class="mb-6">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">🔍 Search Events & Odds</h1>
+                    <p class="text-gray-600">Find the best EV opportunities across all sportsbooks</p>
+                </div>
+
+                <!-- Search Input -->
+                <div class="relative mb-6">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            placeholder="Search teams, events, sports..."
+                            class="w-full pl-12 pr-16 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <button class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Auto-complete Suggestions (Hidden by default) -->
+                    <div id="suggestions" class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-lg mt-1 z-20 hidden">
+                        <div class="p-2">
+                            <div class="suggestion-item p-3 rounded-lg cursor-pointer">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm mr-3">🏀</div>
+                                    <div>
+                                        <div class="font-medium text-gray-900">Lakers @ Warriors</div>
+                                        <div class="text-sm text-gray-500">Tonight, 7:30 PM ET</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="suggestion-item p-3 rounded-lg cursor-pointer">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm mr-3">🏀</div>
+                                    <div>
+                                        <div class="font-medium text-gray-900">Lakers vs Celtics</div>
+                                        <div class="text-sm text-gray-500">Tomorrow, 8:00 PM ET</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="suggestion-item p-3 rounded-lg cursor-pointer">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 text-sm mr-3">📊</div>
+                                    <div>
+                                        <div class="font-medium text-gray-900">Los Angeles Lakers</div>
+                                        <div class="text-sm text-gray-500">Team • All upcoming games</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Sport Filters -->
+                <div class="mb-6">
+                    <div class="flex flex-wrap gap-3">
+                        <button class="sport-filter inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 transition">
+                            <span class="mr-2">🏀</span>
+                            NBA
+                        </button>
+                        <button class="sport-filter inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 transition">
+                            <span class="mr-2">🏈</span>
+                            NFL
+                        </button>
+                        <button class="sport-filter inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 transition">
+                            <span class="mr-2">⚾</span>
+                            MLB
+                        </button>
+                        <button class="sport-filter inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 transition">
+                            <span class="mr-2">🏒</span>
+                            NHL
+                        </button>
+                        <button id="advancedFilters" class="inline-flex items-center px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 transition">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                            </svg>
+                            More Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Action Filters -->
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <button class="quick-filter px-4 py-2 rounded-lg bg-blue-100 text-blue-700 text-sm font-medium hover:bg-blue-200 transition">
+                        All Books
+                    </button>
+                    <button class="quick-filter px-4 py-2 rounded-lg bg-green-100 text-green-700 text-sm font-medium hover:bg-green-200 transition">
+                        EV > $5
+                    </button>
+                    <button class="quick-filter px-4 py-2 rounded-lg bg-orange-100 text-orange-700 text-sm font-medium hover:bg-orange-200 transition">
+                        Today Only
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="mb-8">
+            <!-- Results Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">📊 Search Results</h2>
+                    <p id="resultsCount" class="text-gray-600">15 results found</p>
+                </div>
+                <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+                    <div class="flex items-center">
+                        <label for="sortBy" class="text-sm font-medium text-gray-700 mr-2">Sort by:</label>
+                        <select id="sortBy" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500">
+                            <option value="ev">Best EV</option>
+                            <option value="time">Start Time</option>
+                            <option value="sport">Sport</option>
+                            <option value="alphabetical">A-Z</option>
+                        </select>
+                    </div>
+                    <button class="p-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Results Grid -->
+            <div id="searchResults" class="space-y-4">
+                <!-- High EV Result Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <!-- Event Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm font-bold mr-3">
+                                    🏀
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Lakers @ Warriors</h3>
+                                    <p class="text-sm text-gray-500">NBA • Today, 7:30 PM ET</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">🔥 HOT</span>
+                        </div>
+
+                        <!-- Odds Comparison Table -->
+                        <div class="mb-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">📊 Odds Comparison</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="border-b border-gray-200">
+                                            <th class="text-left py-2 text-gray-500 font-medium">Book</th>
+                                            <th class="text-right py-2 text-gray-500 font-medium">Lakers</th>
+                                            <th class="text-right py-2 text-gray-500 font-medium">Warriors</th>
+                                            <th class="text-right py-2 text-gray-500 font-medium">Best EV</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="py-2 font-medium">Pinnacle</td>
+                                            <td class="py-2 text-right font-mono">+145</td>
+                                            <td class="py-2 text-right font-mono">-165</td>
+                                            <td class="py-2 text-right text-green-600 font-semibold">+$22.40</td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100 bg-green-50">
+                                            <td class="py-2 font-medium">DraftKings</td>
+                                            <td class="py-2 text-right font-mono text-green-600 font-semibold">+150</td>
+                                            <td class="py-2 text-right font-mono">-170</td>
+                                            <td class="py-2 text-right text-green-600 font-bold">+$24.50</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 font-medium">FanDuel</td>
+                                            <td class="py-2 text-right font-mono">+140</td>
+                                            <td class="py-2 text-right font-mono">-160</td>
+                                            <td class="py-2 text-right text-green-600 font-semibold">+$20.30</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- EV Analysis -->
+                        <div class="bg-green-50 rounded-lg p-4 mb-4">
+                            <h4 class="text-sm font-medium text-gray-700 mb-2">💡 EV Analysis</h4>
+                            <div class="grid grid-cols-3 gap-4 text-center">
+                                <div>
+                                    <div class="text-lg font-bold text-green-600">+$24.50</div>
+                                    <div class="text-xs text-gray-600">Weighted</div>
+                                </div>
+                                <div>
+                                    <div class="text-lg font-semibold text-green-600">+$21.40</div>
+                                    <div class="text-xs text-gray-600">No-Vig</div>
+                                </div>
+                                <div>
+                                    <div class="text-lg font-medium text-green-600">+$18.20</div>
+                                    <div class="text-xs text-gray-600">Standard</div>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-center">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    High Confidence
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex space-x-3">
+                            <button class="flex-1 bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+                                View Full Analysis
+                            </button>
+                            <button class="text-gray-400 hover:text-gray-600 p-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            <button class="text-gray-400 hover:text-gray-600 p-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medium EV Result Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <!-- Event Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm font-bold mr-3">
+                                    🏈
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900">Chiefs @ Bills</h3>
+                                    <p class="text-sm text-gray-500">NFL • Sunday, 8:20 PM ET</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-medium">📈 GOOD</span>
+                        </div>
+
+                        <!-- Compact Odds Display -->
+                        <div class="bg-orange-50 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Best Opportunity</span>
+                                <span class="text-sm text-gray-500">FanDuel</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-lg font-semibold text-gray-900">Chiefs Win</div>
+                                    <div class="text-sm font-mono text-gray-600">-110</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-xl font-bold text-orange-600">+$12.30</div>
+                                    <div class="text-xs text-gray-500">Weighted EV</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex space-x-3">
+                            <button class="flex-1 bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+                                View Details
+                            </button>
+                            <button class="text-gray-400 hover:text-gray-600 p-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compact Result Item (Mobile-optimized) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover p-4 md:hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xs">
+                                ⚾
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900 text-sm">Yankees @ Dodgers</div>
+                                <div class="text-xs text-gray-500">10:10 PM • 3 books</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-semibold text-blue-600">+$6.75</div>
+                            <div class="text-xs text-gray-500">Best EV</div>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex justify-between text-xs text-gray-600">
+                        <span>W: +$6.75</span>
+                        <span>NV: +$5.80</span>
+                        <span>S: +$4.20</span>
+                        <button class="text-blue-600">View</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center mt-8">
+                <button class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition font-medium">
+                    Load More Results
+                </button>
+            </div>
+        </section>
+
+        <!-- Empty State (Hidden by default) -->
+        <section id="emptyState" class="mb-8 hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+                <div class="text-6xl mb-4">🔍</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Search for Events & Odds</h3>
+                <p class="text-gray-600 mb-6">Find the best EV opportunities across all sportsbooks</p>
+                <div class="text-sm text-gray-500 mb-6">
+                    <p class="mb-2">Try searching for:</p>
+                    <div class="space-y-1">
+                        <p>• "Lakers" - specific teams</p>
+                        <p>• "NBA" - sports leagues</p>
+                        <p>• "tonight" - time-based</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition">Lakers</button>
+                    <button class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition">Chiefs</button>
+                    <button class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition">NBA Tonight</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- No Results State (Hidden by default) -->
+        <section id="noResults" class="mb-8 hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+                <div class="text-6xl mb-4">🤷‍♂️</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No Results Found</h3>
+                <p class="text-gray-600 mb-6">No events match your search criteria</p>
+                <div class="text-sm text-gray-500 mb-6">
+                    Try adjusting your filters or search for different terms
+                </div>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200 transition">Clear Filters</button>
+                    <button class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition">Try Popular Terms</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden">
+        <div class="grid grid-cols-4 h-16">
+            <button class="flex flex-col items-center justify-center text-gray-400">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
+                </svg>
+                <span class="text-xs">Dashboard</span>
+            </button>
+            <button class="flex flex-col items-center justify-center text-blue-600">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <span class="text-xs font-medium">Search</span>
+            </button>
+            <button class="flex flex-col items-center justify-center text-gray-400">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7H4l5-5v5z"></path>
+                </svg>
+                <span class="text-xs">Alerts</span>
+            </button>
+            <button class="flex flex-col items-center justify-center text-gray-400">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                </svg>
+                <span class="text-xs">More</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Advanced Filters Modal (Hidden by default) -->
+    <div id="filtersModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Advanced Filters</h3>
+                    <button id="closeFilters" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Time Range -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">📅 Time Range</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="radio" name="timeRange" value="today" class="mr-2" checked>
+                            <span class="text-sm">Today</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="timeRange" value="tomorrow" class="mr-2">
+                            <span class="text-sm">Tomorrow</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="radio" name="timeRange" value="week" class="mr-2">
+                            <span class="text-sm">This Week</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Bookmakers -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">📊 Bookmakers</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" checked>
+                            <span class="text-sm">Pinnacle</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" checked>
+                            <span class="text-sm">DraftKings</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" checked>
+                            <span class="text-sm">FanDuel</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2" checked>
+                            <span class="text-sm">Caesars</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span class="text-sm">BetMGM</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="mr-2">
+                            <span class="text-sm">Betway</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- EV Threshold -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">💰 EV Threshold</label>
+                    <div class="flex items-center space-x-3">
+                        <span class="text-sm text-gray-500">$0</span>
+                        <input type="range" min="0" max="50" value="5" class="flex-1">
+                        <span class="text-sm text-gray-500">$50+</span>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span class="text-sm font-medium">Minimum: $5.00</span>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex space-x-3">
+                    <button class="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition">
+                        Clear All
+                    </button>
+                    <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const suggestions = document.getElementById('suggestions');
+        const resultsSection = document.getElementById('resultsSection');
+        const emptyState = document.getElementById('emptyState');
+        const noResults = document.getElementById('noResults');
+
+        // Show/hide suggestions
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.length > 0) {
+                suggestions.classList.remove('hidden');
+            }
+        });
+
+        searchInput.addEventListener('blur', () => {
+            // Delay to allow clicks on suggestions
+            setTimeout(() => suggestions.classList.add('hidden'), 200);
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value;
+            if (query.length > 0) {
+                suggestions.classList.remove('hidden');
+                // Here you would filter suggestions based on query
+            } else {
+                suggestions.classList.add('hidden');
+                showEmptyState();
+            }
+        });
+
+        // Sport filter buttons
+        document.querySelectorAll('.sport-filter').forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.toggle('filter-active');
+                performSearch();
+            });
+        });
+
+        // Quick filter buttons
+        document.querySelectorAll('.quick-filter').forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.toggle('bg-blue-200');
+                performSearch();
+            });
+        });
+
+        // Advanced filters modal
+        const advancedFilters = document.getElementById('advancedFilters');
+        const filtersModal = document.getElementById('filtersModal');
+        const closeFilters = document.getElementById('closeFilters');
+
+        advancedFilters.addEventListener('click', () => {
+            filtersModal.classList.remove('hidden');
+        });
+
+        closeFilters.addEventListener('click', () => {
+            filtersModal.classList.add('hidden');
+        });
+
+        // Search functions
+        function performSearch() {
+            const query = searchInput.value;
+            if (query.length > 0) {
+                showResults();
+            } else {
+                showEmptyState();
+            }
+        }
+
+        function showResults() {
+            resultsSection.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            noResults.classList.add('hidden');
+        }
+
+        function showEmptyState() {
+            resultsSection.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            noResults.classList.add('hidden');
+        }
+
+        function showNoResults() {
+            resultsSection.classList.add('hidden');
+            emptyState.classList.add('hidden');
+            noResults.classList.remove('hidden');
+        }
+
+        // Initialize with results shown for demo
+        showResults();
+    </script>
+</body>
+</html> 
