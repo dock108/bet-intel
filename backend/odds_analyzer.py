@@ -4,9 +4,18 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from datetime import datetime
 import json
+import sys
+import os
 
-from backend.database import EventModel, OddsSnapshotModel, BookmakerModel
-from backend.config import get_settings
+# Add the current directory to the Python path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from config import get_settings
+except ImportError:
+    from .config import get_settings
+
+from .database import EventModel, OddsSnapshotModel, BookmakerModel
 
 logger = logging.getLogger(__name__)
 settings = get_settings()

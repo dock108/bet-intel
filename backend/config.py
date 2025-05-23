@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     odds_api_base_url: str = "https://api.the-odds-api.com/v4"
     odds_polling_interval_minutes: int = 3
     default_sport: str = "baseball_mlb"  # Start with MLB (baseball season)
-    default_regions: str = "us"
+    default_regions: str = "us,us_ex,eu"
     default_markets: str = "h2h,spreads,totals"
     odds_format: str = "american"
     
@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     debug: bool = True
     
     # CORS
-    allowed_origins_str: str = "http://localhost:3000,http://127.0.0.1:3000"
+    allowed_origins_str: str = "*"
     
     @property
     def allowed_origins(self) -> list[str]:

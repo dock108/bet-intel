@@ -6,11 +6,19 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.sql import func
-
-from backend.config import settings
-
+from datetime import datetime, timezone
 import logging
-logger = logging.getLogger(__name__)
+import os
+import sys
+
+# Add the current directory to the Python path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Import settings with fallback for relative imports
+try:
+    from config import settings
+except ImportError:
+    from .config import settings
 
 # Create database engine
 engine = create_engine(

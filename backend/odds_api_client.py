@@ -8,8 +8,16 @@ import logging
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timezone
 import time
+import sys
+import os
 
-from backend.config import settings
+# Add the current directory to the Python path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from config import settings
+except ImportError:
+    from .config import settings
 
 # Configure logger
 logger = logging.getLogger(__name__)
@@ -146,7 +154,7 @@ class OddsAPIClient:
     
     def get_odds(self, 
                  sport: str,
-                 regions: str = "us",
+                 regions: str = "us,us_ex,eu",
                  markets: str = "h2h",
                  odds_format: str = "american",
                  date_format: str = "iso") -> List[Dict[str, Any]]:

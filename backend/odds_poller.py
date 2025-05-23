@@ -8,13 +8,23 @@ import json
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 from sqlalchemy.orm import Session
+import sys
+import os
 
-from backend.database import (
+# Add the current directory to the Python path for imports  
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from config import settings
+except ImportError:
+    from .config import settings
+
+from .database import (
     SessionLocal, EventModel, BookmakerModel, 
     OddsSnapshotModel, PollingLogModel, initialize_database
 )
-from backend.odds_api_client import OddsAPIClient, OddsAPIError, RateLimitError
-from backend.config import settings
+from .odds_api_client import OddsAPIClient, OddsAPIError, RateLimitError
+from .ev_service import calculate_evs_after_polling
 
 # Configure logger
 logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
@@ -291,6 +301,17 @@ class OddsPoller:
                     "requests_last": metadata.get("requests_last")
                 }
             )
+            
+            # Calculate EV for all events after successful odds polling
+            try:
+                logger.info("Starting EV calculations after odds polling...")
+                ev_stats = calculate_evs_after_polling(db)
+                logger.info(f"EV calculation complete: {ev_stats['events_with_evs']}/{ev_stats['total_events']} events, "
+                           f"{ev_stats['total_calculations']} calculations using methods: "
+                           f"{ev_stats['probability_methods']}")
+            except Exception as e:
+                logger.error(f"Error during EV calculation: {e}")
+                # Don't fail the entire polling cycle for EV calculation errors
             
             success = True
             
