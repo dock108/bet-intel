@@ -256,6 +256,7 @@ bet-intel/
 *   [Vig Removal & Fair Odds Calculation](./docs/vig_removal.md)
 *   [Weighted Fair Odds Calculation (Pinnacle/DraftKings/FanDuel)](./docs/fair_odds_weighted.md)
 *   [Multiple EV Calculations (Standard, No-Vig, Weighted Fair Odds)](./docs/ev_calculations.md)
+*   [API Endpoints (EV Opportunities)](./docs/api_endpoints.md)
 
 ## Getting Started
 

@@ -3,20 +3,25 @@ AI-Assisted Peer-to-Peer Betting Intelligence - Backend
 Main FastAPI application entry point
 """
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import logging
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 from backend.config import settings
-from backend.database import get_db, initialize_database, EventModel, OddsSnapshotModel, PollingLogModel
+from backend.database import (
+    get_db, initialize_database, EventModel, OddsSnapshotModel, 
+    PollingLogModel
+)
 from backend.odds_poller import OddsPoller
 from backend.odds_analyzer import (
     aggregate_event_odds,
     find_positive_ev_opportunities,
     PotentialOpportunity
 )
+from backend.ev_calculator import get_ev_calculations_from_db
 
 # Configure logging
 logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
@@ -78,6 +83,232 @@ async def get_events(limit: int = 10, db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error fetching events: {e}")
         raise HTTPException(status_code=500, detail="Error fetching events")
+
+@app.get("/api/ev-opportunities")
+async def get_ev_opportunities(
+    limit: int = Query(default=20, ge=1, le=100, description="Maximum number of events to return"),
+    sport_key: Optional[str] = Query(default=None, description="Filter by sport key (e.g., 'baseball_mlb')"),
+    bookmaker_key: Optional[str] = Query(default=None, description="Filter by bookmaker key (e.g., 'draftkings')"),
+    market_key: str = Query(default="h2h", description="Market type (default: h2h for moneyline)"),
+    positive_ev_only: bool = Query(default=False, description="Only return events with positive EV opportunities"),
+    db: Session = Depends(get_db)
+):
+    """
+    Get events with their Expected Value (EV) calculations across all three methods:
+    - Standard EV (with vig)
+    - No-Vig EV (vig-removed fair odds)
+    - Weighted Fair Odds EV (Pinnacle 50%, DraftKings 25%, FanDuel 25%)
+    
+    Returns structured data showing betting opportunities and value analysis.
+    """
+    try:
+        logger.info(f"EV opportunities request: limit={limit}, sport={sport_key}, bookmaker={bookmaker_key}")
+        
+        # Build base query for events
+        query = db.query(EventModel).filter(EventModel.completed.is_(False))
+        
+        if sport_key:
+            query = query.filter(EventModel.sport_key == sport_key)
+        
+        # Order by commence time (soonest first) and limit results
+        events = query.order_by(EventModel.commence_time.asc()).limit(limit).all()
+        
+        if not events:
+            return {
+                "events": [],
+                "total": 0,
+                "message": "No active events found matching criteria"
+            }
+        
+        ev_opportunities = []
+        
+        for event in events:
+            try:
+                # Get EV calculations for this event
+                ev_calculations = get_ev_calculations_from_db(
+                    db=db,
+                    event_external_id=event.external_id,
+                    bookmaker_key=bookmaker_key,
+                    market_key=market_key
+                )
+                
+                if not ev_calculations:
+                    # If no EV calculations exist, still include event with empty calculations
+                    if not positive_ev_only:
+                        ev_opportunities.append({
+                            "event": {
+                                "external_id": event.external_id,
+                                "sport_key": event.sport_key,
+                                "sport_title": event.sport_title,
+                                "home_team": event.home_team,
+                                "away_team": event.away_team,
+                                "commence_time": event.commence_time.isoformat() if event.commence_time else None
+                            },
+                            "ev_calculations": [],
+                            "opportunities_summary": {
+                                "total_bookmakers": 0,
+                                "positive_standard_ev_count": 0,
+                                "positive_no_vig_ev_count": 0,
+                                "positive_weighted_fair_ev_count": 0,
+                                "best_standard_ev": None,
+                                "best_no_vig_ev": None,
+                                "best_weighted_fair_ev": None
+                            }
+                        })
+                    continue
+                
+                # Group calculations by bookmaker
+                bookmaker_calculations = {}
+                for calc in ev_calculations:
+                    bookmaker_key_calc = calc['bookmaker']['key']
+                    if bookmaker_key_calc not in bookmaker_calculations:
+                        bookmaker_calculations[bookmaker_key_calc] = {
+                            "bookmaker": calc['bookmaker'],
+                            "outcomes": []
+                        }
+                    bookmaker_calculations[bookmaker_key_calc]["outcomes"].append({
+                        "outcome_name": calc['outcome_name'],
+                        "outcome_index": calc['outcome_index'],
+                        "offered_odds": calc['offered_odds'],
+                        "standard_ev": calc['standard_ev'],
+                        "no_vig_ev": calc['no_vig_ev'],
+                        "weighted_fair_ev": calc['weighted_fair_ev'],
+                        "standard_implied_probability": calc['standard_implied_probability'],
+                        "no_vig_fair_probability": calc['no_vig_fair_probability'],
+                        "weighted_fair_probability": calc['weighted_fair_probability'],
+                        "no_vig_fair_odds": calc['no_vig_fair_odds'],
+                        "weighted_fair_odds": calc['weighted_fair_odds'],
+                        "vig_percentage": calc['vig_percentage'],
+                        "books_used_in_weighted": calc['books_used_in_weighted'],
+                        "has_positive_standard_ev": calc['has_positive_standard_ev'],
+                        "has_positive_no_vig_ev": calc['has_positive_no_vig_ev'],
+                        "has_positive_weighted_ev": calc['has_positive_weighted_ev'],
+                        "calculated_at": calc['calculated_at'].isoformat() if calc['calculated_at'] else None
+                    })
+                
+                # Calculate opportunities summary
+                summary = _calculate_opportunities_summary(ev_calculations)
+                
+                # Apply positive EV filter if requested
+                if positive_ev_only and (
+                    summary['positive_standard_ev_count'] == 0 and
+                    summary['positive_no_vig_ev_count'] == 0 and
+                    summary['positive_weighted_fair_ev_count'] == 0
+                ):
+                    continue
+                
+                ev_opportunities.append({
+                    "event": {
+                        "external_id": event.external_id,
+                        "sport_key": event.sport_key,
+                        "sport_title": event.sport_title,
+                        "home_team": event.home_team,
+                        "away_team": event.away_team,
+                        "commence_time": event.commence_time.isoformat() if event.commence_time else None
+                    },
+                    "ev_calculations": list(bookmaker_calculations.values()),
+                    "opportunities_summary": summary
+                })
+                
+            except Exception as e:
+                logger.error(f"Error processing EV calculations for event {event.external_id}: {e}")
+                # Continue processing other events
+                continue
+        
+        return {
+            "events": ev_opportunities,
+            "total": len(ev_opportunities),
+            "filters_applied": {
+                "sport_key": sport_key,
+                "bookmaker_key": bookmaker_key,
+                "market_key": market_key,
+                "positive_ev_only": positive_ev_only,
+                "limit": limit
+            },
+            "metadata": {
+                "generated_at": datetime.now().isoformat(),
+                "ev_methods": {
+                    "standard_ev": "Expected value using raw bookmaker odds (includes vig)",
+                    "no_vig_ev": "Expected value using vig-removed fair odds",
+                    "weighted_fair_ev": "Expected value using weighted consensus (Pinnacle 50%, DK 25%, FD 25%)"
+                }
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching EV opportunities: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching EV opportunities: {str(e)}")
+
+
+def _calculate_opportunities_summary(ev_calculations: List[dict]) -> dict:
+    """Calculate summary statistics for EV opportunities."""
+    summary = {
+        "total_bookmakers": 0,
+        "positive_standard_ev_count": 0,
+        "positive_no_vig_ev_count": 0,
+        "positive_weighted_fair_ev_count": 0,
+        "best_standard_ev": None,
+        "best_no_vig_ev": None,
+        "best_weighted_fair_ev": None
+    }
+    
+    if not ev_calculations:
+        return summary
+    
+    bookmakers = set()
+    best_standard = None
+    best_no_vig = None
+    best_weighted = None
+    
+    for calc in ev_calculations:
+        bookmakers.add(calc['bookmaker']['key'])
+        
+        # Count positive EVs
+        if calc['has_positive_standard_ev']:
+            summary['positive_standard_ev_count'] += 1
+        if calc['has_positive_no_vig_ev']:
+            summary['positive_no_vig_ev_count'] += 1
+        if calc['has_positive_weighted_ev']:
+            summary['positive_weighted_fair_ev_count'] += 1
+        
+        # Track best EVs
+        if calc['standard_ev'] is not None:
+            if best_standard is None or calc['standard_ev'] > best_standard['ev']:
+                best_standard = {
+                    "ev": calc['standard_ev'],
+                    "bookmaker": calc['bookmaker']['title'],
+                    "outcome": calc['outcome_name'],
+                    "odds": calc['offered_odds']
+                }
+        
+        if calc['no_vig_ev'] is not None:
+            if best_no_vig is None or calc['no_vig_ev'] > best_no_vig['ev']:
+                best_no_vig = {
+                    "ev": calc['no_vig_ev'],
+                    "bookmaker": calc['bookmaker']['title'],
+                    "outcome": calc['outcome_name'],
+                    "odds": calc['offered_odds'],
+                    "vig_percentage": calc['vig_percentage']
+                }
+        
+        if calc['weighted_fair_ev'] is not None:
+            if best_weighted is None or calc['weighted_fair_ev'] > best_weighted['ev']:
+                best_weighted = {
+                    "ev": calc['weighted_fair_ev'],
+                    "bookmaker": calc['bookmaker']['title'],
+                    "outcome": calc['outcome_name'],
+                    "odds": calc['offered_odds'],
+                    "books_used": calc['books_used_in_weighted']
+                }
+    
+    summary.update({
+        "total_bookmakers": len(bookmakers),
+        "best_standard_ev": best_standard,
+        "best_no_vig_ev": best_no_vig,
+        "best_weighted_fair_ev": best_weighted
+    })
+    
+    return summary
 
 @app.get("/api/polling-logs")
 async def get_polling_logs(limit: int = 20, db: Session = Depends(get_db)):

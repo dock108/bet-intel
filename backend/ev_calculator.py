@@ -452,7 +452,7 @@ def _generate_betting_recommendation(results: Dict[str, any]) -> Dict[str, any]:
     
     recommendation = {
         'action': 'no_bet',  # no_bet, bet_small, bet_medium, bet_large
-        'confidence': 'low', # low, medium, high
+        'confidence': 'low',  # low, medium, high
         'reasoning': [],
         'priority_method': None,
         'risk_assessment': 'unknown'
