@@ -107,7 +107,7 @@ The platform automates value identification, clearly communicates optimal bettin
 ## Current Features (v0.1.0)
 
 ### ✅ Real-Time Odds Polling
-- **The Odds API Integration**: Configured for NBA data with 3-minute intervals
+- **The Odds API Integration**: Configured for MLB data with 3-minute intervals
 - **Comprehensive Data Storage**: Events, bookmakers, odds snapshots with full history
 - **Opening/Closing Odds Tracking**: Automatic detection and flagging for analytics
 - **Rate Limiting & Error Handling**: Robust API management with quota tracking
@@ -137,7 +137,7 @@ The platform automates value identification, clearly communicates optimal bettin
 # Check system health
 curl http://localhost:8000/health
 
-# View recent NBA games
+# View recent MLB games
 curl "http://localhost:8000/api/events?limit=5"
 
 # Get polling statistics
@@ -154,7 +154,7 @@ curl "http://localhost:8000/api/polling-logs?limit=10"
 
 ### Current Implementation (May 23, 2025)
 - ✅ Repository setup and project structure
-- ✅ The Odds API integration and polling system
+- ✅ The Odds API integration and polling system (MLB focus)
 - ✅ Database models and data storage
 - ✅ Basic FastAPI backend with monitoring endpoints
 - ✅ Opening and closing odds tracking
@@ -237,6 +237,84 @@ bet-intel/
 
 *[Support information to be added]*
 
+### 📈 **Current Data Coverage**:
+- **Sport**: MLB (baseball_mlb) - active baseball season
+- **Markets**: Moneyline, Spreads, Totals  
+- **Bookmakers**: US sportsbooks from The Odds API
+- **Frequency**: Every 3 minutes (configurable)
+- **Storage**: Complete historical odds snapshots
+
 ---
 
-**Note**: This project is currently in active development. Check the `checklist.md` file for current progress and upcoming milestones. 
+**Note**: This project is currently in active development. Check the `checklist.md` file for current progress and upcoming milestones.
+
+## Documentation
+
+*   [Odds Polling System](./docs/odds_polling.md)
+*   [Odds Aggregation & Discrepancy Detection](./docs/odds_aggregation_discrepancy.md)
+
+## Getting Started
+
+(To be expanded with setup and run instructions)
+
+### Prerequisites
+
+*   Python 3.9+
+*   Pip
+
+### Backend Setup
+
+1.  Navigate to the `backend` directory:
+    ```bash
+    cd backend
+    ```
+2.  Create a virtual environment (optional but recommended):
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+    ```
+3.  Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  Copy the example environment file and fill in your details:
+    ```bash
+    cp .env.example .env
+    ```
+    *   You will need an API key from [The Odds API](https://the-odds-api.com/).
+5.  Initialize the database:
+    *   The database (`bet_intel.db`) is created automatically if it doesn't exist when the application or poller starts.
+    *   You can also initialize it manually by running `python -c "from database import initialize_database; initialize_database()"` from the `backend` directory.
+
+### Running the Backend
+
+*   **To start the FastAPI server (for API access and manual polling tests)**:
+    ```bash
+    python main.py
+    ```
+    The API will be available at `http://localhost:8000` and documentation at `http://localhost:8000/docs`.
+
+*   **To start the continuous odds poller service**:
+    ```bash
+    python odds_poller.py
+    ```
+    This will poll for odds at the interval defined in your `.env` file (default is 3 minutes).
+
+### Frontend Setup
+
+(Placeholder - to be implemented)
+
+## Development Tasks & Checklist
+
+Refer to [checklist.md](./checklist.md) for ongoing tasks and progress.
+
+## Technologies
+
+*   **Backend**: Python, FastAPI, SQLAlchemy, Pydantic, HTTPretty (for testing)
+*   **Frontend**: (To be decided - likely React or Vue.js)
+*   **Database**: SQLite (initially)
+*   **Odds Data**: The Odds API
+
+## Contributing
+
+(To be defined) 

@@ -4,7 +4,6 @@ uvicorn[standard]>=0.24.0
 
 # Database
 sqlalchemy>=2.0.0
-sqlite3  # Built-in with Python
 
 # HTTP Requests and Web Scraping
 requests>=2.31.0

@@ -256,7 +256,14 @@ class OddsPoller:
             
             # Extract metadata
             metadata = odds_data.get("_metadata", {})
-            events_data = odds_data if isinstance(odds_data, list) else []
+            
+            # Handle both wrapped and direct list responses
+            if "data" in odds_data and isinstance(odds_data["data"], list):
+                events_data = odds_data["data"]
+            elif isinstance(odds_data, list):
+                events_data = odds_data
+            else:
+                events_data = []
             
             logger.info(f"Received {len(events_data)} events from API")
             

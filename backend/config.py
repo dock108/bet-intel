@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # The Odds API Configuration
     odds_api_base_url: str = "https://api.the-odds-api.com/v4"
     odds_polling_interval_minutes: int = 3
-    default_sport: str = "basketball_nba"  # Start with NBA
+    default_sport: str = "baseball_mlb"  # Start with MLB (baseball season)
     default_regions: str = "us"
     default_markets: str = "h2h,spreads,totals"
     odds_format: str = "american"
@@ -44,7 +44,12 @@ class Settings(BaseSettings):
     debug: bool = True
     
     # CORS
-    allowed_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+    allowed_origins_str: str = "http://localhost:3000,http://127.0.0.1:3000"
+    
+    @property
+    def allowed_origins(self) -> list[str]:
+        """Parse the comma-separated origins string into a list"""
+        return [origin.strip() for origin in self.allowed_origins_str.split(",") if origin.strip()]
     
     # Rate Limiting
     api_rate_limit_per_minute: int = 60

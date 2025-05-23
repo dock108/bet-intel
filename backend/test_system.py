@@ -46,8 +46,8 @@ def test_database():
             # Check if we can create a test event (without committing)
             test_event = EventModel(
                 external_id="test_event_123",
-                sport_key="basketball_nba",
-                sport_title="NBA",
+                sport_key="baseball_mlb",
+                sport_title="MLB",
                 home_team="Test Home Team",
                 away_team="Test Away Team",
                 commence_time=datetime.now(timezone.utc)

@@ -7,10 +7,17 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import logging
+from typing import List
 
-from config import settings
-from database import get_db, initialize_database, EventModel, OddsSnapshotModel, PollingLogModel
-from odds_poller import OddsPoller
+from .config import settings
+from .database import get_db, initialize_database, Event as EventModel, OddsSnapshot as OddsSnapshotModel, PollingLog as PollingLogModel
+from .odds_poller import OddsPoller
+from .odds_analyzer import (
+    aggregate_event_odds,
+    find_positive_ev_opportunities,
+    AggregatedEventOdds, # To be used as response model for a potential future endpoint
+    PotentialOpportunity
+)
 
 # Configure logging
 logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
@@ -143,6 +150,41 @@ async def get_stats(db: Session = Depends(get_db)):
     except Exception as e:
         logger.error(f"Error fetching stats: {e}")
         raise HTTPException(status_code=500, detail="Error fetching stats")
+
+@app.get("/api/opportunities", response_model=List[PotentialOpportunity], tags=["Analysis"])
+async def get_opportunities(db: Session = Depends(get_db)):
+    """
+    Fetches all currently detected positive EV opportunities.
+    This endpoint iterates through all non-completed events, aggregates their odds,
+    and then runs the discrepancy detection logic.
+    """
+    logger.info("Received request for /api/opportunities")
+    opportunities: List[PotentialOpportunity] = []
+    
+    active_events = db.query(EventModel).filter(EventModel.completed.is_(False)).all()
+    if not active_events:
+        logger.info("No active events found to analyze for opportunities.")
+        return []
+
+    logger.info(f"Found {len(active_events)} active events to analyze.")
+
+    for event_db in active_events:
+        logger.debug(f"Analyzing event: {event_db.external_id} ({event_db.home_team} vs {event_db.away_team})")
+        aggregated_odds_data = aggregate_event_odds(db, event_db.id)
+        if aggregated_odds_data:
+            event_opportunities = find_positive_ev_opportunities(aggregated_odds_data, db)
+            if event_opportunities:
+                opportunities.extend(event_opportunities)
+                logger.info(f"Found {len(event_opportunities)} opportunities for event {event_db.external_id}")
+        else:
+            logger.warning(f"Could not aggregate odds for event ID {event_db.id}, skipping opportunity analysis for it.")
+            
+    logger.info(f"Total opportunities found across all events: {len(opportunities)}")
+    if not opportunities:
+        # Return 200 with empty list if no opportunities, which is valid
+        logger.info("No opportunities found after analysis.")
+
+    return opportunities
 
 if __name__ == "__main__":
     import uvicorn

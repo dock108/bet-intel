@@ -14,7 +14,7 @@ The Odds Polling System is responsible for collecting real-time sports betting o
    - API keys and configuration parameters
 
 2. **Database Models** (`database.py`)
-   - `SportModel`: Available sports (NBA, NFL, etc.)
+   - `SportModel`: Available sports (MLB, NFL, NBA, etc.)
    - `EventModel`: Individual games/matches
    - `BookmakerModel`: Sportsbooks and P2P exchanges
    - `OddsSnapshotModel`: Historical odds data
@@ -50,7 +50,7 @@ ODDS_API_KEY=your_api_key_here
 
 # Optional (with defaults)
 ODDS_POLLING_INTERVAL_MINUTES=3
-DEFAULT_SPORT=basketball_nba
+DEFAULT_SPORT=baseball_mlb
 DEFAULT_REGIONS=us
 DEFAULT_MARKETS=h2h,spreads,totals
 ODDS_FORMAT=american
@@ -58,7 +58,7 @@ ODDS_FORMAT=american
 
 ### Default Sport Focus
 
-Currently configured for NBA (`basketball_nba`) with:
+Currently configured for MLB (`baseball_mlb`) with:
 - **Regions**: US sportsbooks
 - **Markets**: Moneyline (h2h), spreads, totals
 - **Format**: American odds
@@ -139,8 +139,8 @@ python odds_poller.py
 
 ### Quota Management
 - Free tier: 500 requests/month
-- Cost per NBA request: 3 (regions=us, markets=h2h,spreads,totals)
-- ~167 NBA polls per month at current settings
+- Cost per MLB request: 3 (regions=us, markets=h2h,spreads,totals)
+- ~167 MLB polls per month at current settings
 
 ### Error Handling
 - Rate limiting protection
@@ -216,7 +216,7 @@ python odds_poller.py
    Solution: Check database file permissions and path
 
 4. **No Events Returned**
-   - NBA season dates
+   - Current sport season dates
    - API response empty (normal during off-season)
    - Network connectivity issues
 

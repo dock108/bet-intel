@@ -103,13 +103,23 @@ class OddsAPIClient:
                 raise OddsAPIError(f"Invalid JSON response: {e}")
             
             # Add metadata to response
-            data["_metadata"] = {
+            metadata = {
                 "response_time_ms": response_time,
                 "requests_remaining": int(remaining) if remaining else None,
                 "requests_used": int(used) if used else None,
                 "requests_last": int(last) if last else None,
                 "timestamp": datetime.now(timezone.utc).isoformat()
             }
+            
+            # Handle both dict and list responses
+            if isinstance(data, dict):
+                data["_metadata"] = metadata
+            else:
+                # For list responses, wrap in a dict with metadata
+                data = {
+                    "data": data,
+                    "_metadata": metadata
+                }
             
             return data
             
@@ -223,17 +233,17 @@ if __name__ == "__main__":
         sports = client.get_sports()
         print(f"Available sports: {len(sports)}")
         
-        # Test getting NBA odds
-        nba_odds = client.get_odds(
-            sport="basketball_nba",
+        # Test getting MLB odds
+        mlb_odds = client.get_odds(
+            sport="baseball_mlb",
             regions="us",
             markets="h2h,spreads,totals",
             odds_format="american"
         )
-        print(f"NBA events with odds: {len(nba_odds)}")
+        print(f"MLB events with odds: {len(mlb_odds)}")
         
-        if nba_odds:
-            print(f"Sample event: {nba_odds[0]['home_team']} vs {nba_odds[0]['away_team']}")
+        if mlb_odds:
+            print(f"Sample event: {mlb_odds[0]['home_team']} vs {mlb_odds[0]['away_team']}")
         
     except Exception as e:
         print(f"Error: {e}") 
