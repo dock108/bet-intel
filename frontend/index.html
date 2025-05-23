@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bet Intel Dashboard - MVP Wireframe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.2s ease-in-out; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .ev-positive { background: linear-gradient(45deg, #16a34a, #22c55e); }
+        .ev-medium { background: linear-gradient(45deg, #d97706, #f59e0b); }
+        .spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Brand -->
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                        BI
+                    </div>
+                    <h1 class="ml-3 text-xl font-bold text-gray-900">Bet Intel</h1>
+                </div>
+                
+                <!-- Desktop Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <button class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7H4l5-5v5z"></path>
+                        </svg>
+                    </button>
+                    <button class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Stats Bar -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-blue-50 rounded-lg p-3">
+                    <div class="text-lg font-semibold text-blue-600">12</div>
+                    <div class="text-xs text-gray-600">Opportunities</div>
+                </div>
+                <div class="bg-green-50 rounded-lg p-3">
+                    <div class="text-lg font-semibold text-green-600">+$24.50</div>
+                    <div class="text-xs text-gray-600">Best EV</div>
+                </div>
+                <div class="bg-orange-50 rounded-lg p-3">
+                    <div class="text-lg font-semibold text-orange-600">45m</div>
+                    <div class="text-xs text-gray-600">Next Game</div>
+                </div>
+                <div class="bg-purple-50 rounded-lg p-3">
+                    <div class="text-lg font-semibold text-purple-600">6</div>
+                    <div class="text-xs text-gray-600">Active Books</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Top EV Opportunities Section -->
+        <section class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">🔥 Top EV Opportunities</h2>
+                <div class="flex space-x-2">
+                    <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">View All</button>
+                    <button class="text-sm text-gray-500 hover:text-gray-700">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- EV Opportunity Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- High EV Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <!-- Event Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-sm font-bold">
+                                    🏀
+                                </div>
+                                <span class="ml-2 text-sm font-medium text-gray-600">NBA</span>
+                            </div>
+                            <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">🔥 HOT</span>
+                        </div>
+
+                        <!-- Teams -->
+                        <div class="mb-3">
+                            <h3 class="text-lg font-semibold text-gray-900">Lakers @ Warriors</h3>
+                            <p class="text-sm text-gray-500">⏰ 7:30 PM ET • Today</p>
+                        </div>
+
+                        <!-- Bookmaker -->
+                        <div class="mb-4">
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-green-600 text-xs">
+                                    📊
+                                </div>
+                                <span class="ml-2 text-sm font-medium text-gray-700">DraftKings</span>
+                            </div>
+                        </div>
+
+                        <!-- EV Details -->
+                        <div class="bg-green-50 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Lakers Win</span>
+                                <span class="text-sm font-mono text-gray-600">+150</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-bold text-green-600">+$24.50 EV</div>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-600 space-y-1">
+                                <div class="flex justify-between">
+                                    <span>Standard:</span>
+                                    <span class="font-medium">+$18.20</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>No-Vig:</span>
+                                    <span class="font-medium">+$21.40</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Weighted:</span>
+                                    <span class="font-medium text-green-600">+$24.50</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+                                View Details
+                            </button>
+                            <button class="text-gray-400 hover:text-gray-600 p-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medium EV Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <!-- Event Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm font-bold">
+                                    🏈
+                                </div>
+                                <span class="ml-2 text-sm font-medium text-gray-600">NFL</span>
+                            </div>
+                            <span class="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-medium">📈 GOOD</span>
+                        </div>
+
+                        <!-- Teams -->
+                        <div class="mb-3">
+                            <h3 class="text-lg font-semibold text-gray-900">Chiefs @ Bills</h3>
+                            <p class="text-sm text-gray-500">⏰ 8:20 PM ET • Sunday</p>
+                        </div>
+
+                        <!-- Bookmaker -->
+                        <div class="mb-4">
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center text-blue-600 text-xs">
+                                    📊
+                                </div>
+                                <span class="ml-2 text-sm font-medium text-gray-700">FanDuel</span>
+                            </div>
+                        </div>
+
+                        <!-- EV Details -->
+                        <div class="bg-orange-50 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Chiefs Win</span>
+                                <span class="text-sm font-mono text-gray-600">-110</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-bold text-orange-600">+$12.30 EV</div>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-600 space-y-1">
+                                <div class="flex justify-between">
+                                    <span>Standard:</span>
+                                    <span class="font-medium">+$8.50</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>No-Vig:</span>
+                                    <span class="font-medium">+$10.20</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Weighted:</span>
+                                    <span class="font-medium text-orange-600">+$12.30</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+                                View Details
+                            </button>
+                            <button class="text-gray-400 hover:text-gray-600 p-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lower EV Card -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 card-hover overflow-hidden">
+                    <div class="p-6">
+                        <!-- Event Header -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm font-bold">
+                                    ⚾
+                                </div>
+                                <span class="ml-2 text-sm font-medium text-gray-600">MLB</span>
+                            </div>
+                            <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-medium">✅ SAFE</span>
+                        </div>
+
+                        <!-- Teams -->
+                        <div class="mb-3">
+                            <h3 class="text-lg font-semibold text-gray-900">Yankees @ Dodgers</h3>
+                            <p class="text-sm text-gray-500">⏰ 10:10 PM ET • Tonight</p>
+                        </div>
+
+                        <!-- Bookmaker -->
+                        <div class="mb-4">
+                            <div class="flex items-center">
+                                <div class="w-6 h-6 bg-red-100 rounded flex items-center justify-center text-red-600 text-xs">
+                                    📊
+                                </div>
+                                <span class="ml-2 text-sm font-medium text-gray-700">Caesars</span>
+                            </div>
+                        </div>
+
+                        <!-- EV Details -->
+                        <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Yankees Win</span>
+                                <span class="text-sm font-mono text-gray-600">+125</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xl font-bold text-blue-600">+$6.75 EV</div>
+                            </div>
+                            <div class="mt-3 text-xs text-gray-600 space-y-1">
+                                <div class="flex justify-between">
+                                    <span>Standard:</span>
+                                    <span class="font-medium">+$4.20</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>No-Vig:</span>
+                                    <span class="font-medium">+$5.80</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Weighted:</span>
+                                    <span class="font-medium text-blue-600">+$6.75</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+                                View Details
+                            </button>
+                            <button class="text-gray-400 hover:text-gray-600 p-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upcoming Events Section -->
+        <section class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">📅 Upcoming Events</h2>
+                <div class="flex space-x-2">
+                    <select class="text-sm border border-gray-300 rounded-lg px-3 py-1 bg-white">
+                        <option>All Sports</option>
+                        <option>NBA</option>
+                        <option>NFL</option>
+                        <option>MLB</option>
+                        <option>NHL</option>
+                    </select>
+                    <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">View Calendar</button>
+                </div>
+            </div>
+
+            <!-- Events List -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <!-- Event Item 1 -->
+                <div class="p-4 border-b border-gray-100 hover:bg-gray-50 transition cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-sm font-medium text-gray-500 w-16">7:30 PM</div>
+                            <div class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 text-xs">
+                                🏀
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Lakers @ Warriors</div>
+                                <div class="text-sm text-gray-500">NBA • Golden State</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-green-600">🔥 3 EVs</div>
+                            <div class="text-xs text-gray-500">Best: +$24.5 • DraftKings</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Item 2 -->
+                <div class="p-4 border-b border-gray-100 hover:bg-gray-50 transition cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-sm font-medium text-gray-500 w-16">8:20 PM</div>
+                            <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs">
+                                🏈
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Chiefs @ Bills</div>
+                                <div class="text-sm text-gray-500">NFL • Buffalo</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-orange-600">📈 2 EVs</div>
+                            <div class="text-xs text-gray-500">Best: +$12.3 • FanDuel</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Item 3 -->
+                <div class="p-4 border-b border-gray-100 hover:bg-gray-50 transition cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-sm font-medium text-gray-500 w-16">10:10 PM</div>
+                            <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xs">
+                                ⚾
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Yankees @ Dodgers</div>
+                                <div class="text-sm text-gray-500">MLB • Los Angeles</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-blue-600">✅ 1 EV</div>
+                            <div class="text-xs text-gray-500">Best: +$6.75 • Caesars</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Item 4 -->
+                <div class="p-4 hover:bg-gray-50 transition cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-sm font-medium text-gray-500 w-16">11:30 PM</div>
+                            <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-xs">
+                                🏒
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-900">Rangers @ Canucks</div>
+                                <div class="text-sm text-gray-500">NHL • Vancouver</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-medium text-gray-400">⏳ Calculating</div>
+                            <div class="text-xs text-gray-400">Odds updating...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions Section -->
+        <section class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">⚡ Quick Actions</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <button class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:bg-gray-50 transition">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="font-medium text-gray-900 text-sm">Search Odds</div>
+                </button>
+                
+                <button class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:bg-gray-50 transition">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="font-medium text-gray-900 text-sm">Watchlist</div>
+                </button>
+                
+                <button class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:bg-gray-50 transition">
+                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7H4l5-5v5z"></path>
+                        </svg>
+                    </div>
+                    <div class="font-medium text-gray-900 text-sm">Set Alerts</div>
+                </button>
+                
+                <button class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:bg-gray-50 transition">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div class="font-medium text-gray-900 text-sm">Analytics</div>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden">
+        <div class="grid grid-cols-4 h-16">
+            <button class="flex flex-col items-center justify-center text-blue-600">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
+                </svg>
+                <span class="text-xs font-medium">Dashboard</span>
+            </button>
+            <button class="flex flex-col items-center justify-center text-gray-400">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <span class="text-xs">Search</span>
+            </button>
+            <button class="flex flex-col items-center justify-center text-gray-400">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7H4l5-5v5z"></path>
+                </svg>
+                <span class="text-xs">Alerts</span>
+            </button>
+            <button class="flex flex-col items-center justify-center text-gray-400">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>
+                </svg>
+                <span class="text-xs">More</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Loading States & Interactions (JavaScript) -->
+    <script>
+        // Simulated real-time updates
+        function updateStats() {
+            const stats = document.querySelectorAll('.text-lg.font-semibold');
+            // Simulate small changes in opportunity count
+            const currentCount = parseInt(stats[0].textContent);
+            stats[0].textContent = Math.max(8, currentCount + Math.floor(Math.random() * 3) - 1);
+        }
+
+        // Update every 30 seconds to simulate real-time data
+        setInterval(updateStats, 30000);
+
+        // Add click interactions
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('button')) {
+                    console.log('Viewing detailed EV breakdown...');
+                    // Would navigate to detailed view
+                }
+            });
+        });
+
+        // Mobile responsive testing
+        function checkMobile() {
+            const isMobile = window.innerWidth < 768;
+            document.body.classList.toggle('mobile-view', isMobile);
+        }
+        
+        window.addEventListener('resize', checkMobile);
+        checkMobile();
+    </script>
+</body>
+</html> 

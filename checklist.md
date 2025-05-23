@@ -21,6 +21,7 @@
 - [x] **Weighted Fair Odds Calculation (Pinnacle 50%, DraftKings 25%, FanDuel 25%)**
 - [x] **Multiple EV Calculations (Standard, No-Vig, Weighted Fair Odds)**
 - [x] **Enhanced Opportunities Endpoint (GET /api/ev-opportunities with pagination and filtering)**
+- [x] **Dashboard Wireframe & Responsive Optimization**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 
@@ -42,7 +43,6 @@
 - [ ] **Recommended Odds Component**
 - [ ] **Custom Limit Order Input Form**
 - [ ] **Limit Order Monitoring UI & Notifications**
-- [ ] **Dashboard Wireframe & Responsive Optimization**
 
 ## 🚧 Notifications & Affiliate Integration
 
