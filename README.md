@@ -254,6 +254,7 @@ bet-intel/
 *   [Odds Aggregation & Discrepancy Detection](./docs/odds_aggregation_discrepancy.md)
 *   [Odds Conversion (American Odds to Implied Probability)](./docs/odds_conversion.md)
 *   [Vig Removal & Fair Odds Calculation](./docs/vig_removal.md)
+*   [Weighted Fair Odds Calculation (Pinnacle/DraftKings/FanDuel)](./docs/fair_odds_weighted.md)
 
 ## Getting Started
 
