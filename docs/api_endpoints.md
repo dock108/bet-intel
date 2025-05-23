@@ -32,10 +32,13 @@ This endpoint returns active sports betting events along with their EV calculati
 | Parameter | Type | Default | Description | Constraints |
 |-----------|------|---------|-------------|-------------|
 | `limit` | integer | 20 | Maximum number of events to return | 1-100 |
+| `offset` | integer | 0 | Number of events to skip for pagination | ≥ 0 |
 | `sport_key` | string | null | Filter by sport (e.g., 'baseball_mlb') | Optional |
 | `bookmaker_key` | string | null | Filter by bookmaker (e.g., 'draftkings') | Optional |
 | `market_key` | string | "h2h" | Market type filter | Default: moneyline |
 | `positive_ev_only` | boolean | false | Only return events with positive EV opportunities | Optional |
+| `min_ev_threshold` | float | null | Minimum EV threshold (e.g., 5.0 for $5+ EV) | Optional |
+| `ev_method` | string | "any" | EV method for threshold filtering | 'standard', 'no_vig', 'weighted_fair', 'any' |
 
 ### Example Requests
 
@@ -43,14 +46,20 @@ This endpoint returns active sports betting events along with their EV calculati
 # Get all EV opportunities (default parameters)
 curl "http://localhost:8000/api/ev-opportunities"
 
+# Pagination - get second page with 10 events per page
+curl "http://localhost:8000/api/ev-opportunities?limit=10&offset=10"
+
 # Get only MLB games with positive EV
 curl "http://localhost:8000/api/ev-opportunities?sport_key=baseball_mlb&positive_ev_only=true"
 
-# Get DraftKings opportunities only, limit to 10 events
-curl "http://localhost:8000/api/ev-opportunities?bookmaker_key=draftkings&limit=10"
+# High-value opportunities with specific EV threshold
+curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=10.0&ev_method=weighted_fair"
 
-# Get upcoming events with any positive EV signals
-curl "http://localhost:8000/api/ev-opportunities?positive_ev_only=true&limit=5"
+# DraftKings opportunities with any EV method >= $5
+curl "http://localhost:8000/api/ev-opportunities?bookmaker_key=draftkings&min_ev_threshold=5.0&ev_method=any"
+
+# Get upcoming events with standard EV >= $3, paginated
+curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=standard&limit=5&offset=0"
 ```
 
 ### Response Format
@@ -132,17 +141,35 @@ curl "http://localhost:8000/api/ev-opportunities?positive_ev_only=true&limit=5"
           "outcome": "outcome_A",
           "odds": 120,
           "books_used": "pinnacle,draftkings,fanduel"
+        },
+        "meets_threshold": true,
+        "threshold_details": {
+          "min_ev_threshold": 5.0,
+          "ev_method": "any"
         }
       }
     }
   ],
   "total": 1,
+  "pagination": {
+    "limit": 20,
+    "offset": 0,
+    "total_events": 15,
+    "returned_events": 1,
+    "has_next": false,
+    "has_previous": false,
+    "next_offset": null,
+    "previous_offset": null
+  },
   "filters_applied": {
     "sport_key": null,
     "bookmaker_key": null,
     "market_key": "h2h",
     "positive_ev_only": false,
-    "limit": 20
+    "min_ev_threshold": null,
+    "ev_method": "any",
+    "limit": 20,
+    "offset": 0
   },
   "metadata": {
     "generated_at": "2025-05-23T14:35:00",
@@ -150,7 +177,8 @@ curl "http://localhost:8000/api/ev-opportunities?positive_ev_only=true&limit=5"
       "standard_ev": "Expected value using raw bookmaker odds (includes vig)",
       "no_vig_ev": "Expected value using vig-removed fair odds",
       "weighted_fair_ev": "Expected value using weighted consensus (Pinnacle 50%, DK 25%, FD 25%)"
-    }
+    },
+    "pagination_note": "Showing events 1-1 of 15 total events"
   }
 }
 ```
@@ -185,6 +213,18 @@ curl "http://localhost:8000/api/ev-opportunities?positive_ev_only=true&limit=5"
 - `total_bookmakers`: Number of bookmakers analyzed
 - `positive_*_ev_count`: Count of positive EV opportunities by method
 - `best_*_ev`: Best EV opportunity details by method
+- `meets_threshold`: Whether event meets specified EV threshold (if applicable)
+- `threshold_details`: Applied threshold settings (if applicable)
+
+#### Pagination Object
+- `limit`: Number of events requested per page
+- `offset`: Number of events skipped for pagination
+- `total_events`: Total number of events in database matching filters
+- `returned_events`: Number of events returned in this response
+- `has_next`: Boolean indicating if more events are available
+- `has_previous`: Boolean indicating if previous page exists
+- `next_offset`: Offset value for next page (null if no next page)
+- `previous_offset`: Offset value for previous page (null if no previous page)
 
 ### Error Responses
 
@@ -220,6 +260,39 @@ curl "http://localhost:8000/api/ev-opportunities?bookmaker_key=draftkings"
 ```bash
 # Focus on MLB games only
 curl "http://localhost:8000/api/ev-opportunities?sport_key=baseball_mlb&limit=5"
+```
+
+#### 4. Pagination Examples
+```bash
+# Get first page (events 1-20)
+curl "http://localhost:8000/api/ev-opportunities?limit=20&offset=0"
+
+# Get second page (events 21-40)
+curl "http://localhost:8000/api/ev-opportunities?limit=20&offset=20"
+
+# Get third page (events 41-60)
+curl "http://localhost:8000/api/ev-opportunities?limit=20&offset=40"
+```
+
+#### 5. EV Threshold Filtering
+```bash
+# High-value opportunities: weighted fair EV >= $15
+curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=15.0&ev_method=weighted_fair"
+
+# Medium opportunities: any EV method >= $5
+curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=5.0&ev_method=any"
+
+# Conservative opportunities: no-vig EV >= $3
+curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=no_vig"
+```
+
+#### 6. Combined Filtering
+```bash
+# Premium opportunities: MLB + DraftKings + weighted fair EV >= $10
+curl "http://localhost:8000/api/ev-opportunities?sport_key=baseball_mlb&bookmaker_key=draftkings&min_ev_threshold=10.0&ev_method=weighted_fair"
+
+# Safe bets: positive EV across all methods
+curl "http://localhost:8000/api/ev-opportunities?positive_ev_only=true&min_ev_threshold=1.0&ev_method=any"
 ```
 
 ### Integration Notes

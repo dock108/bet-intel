@@ -87,10 +87,13 @@ async def get_events(limit: int = 10, db: Session = Depends(get_db)):
 @app.get("/api/ev-opportunities")
 async def get_ev_opportunities(
     limit: int = Query(default=20, ge=1, le=100, description="Maximum number of events to return"),
+    offset: int = Query(default=0, ge=0, description="Number of events to skip for pagination"),
     sport_key: Optional[str] = Query(default=None, description="Filter by sport key (e.g., 'baseball_mlb')"),
     bookmaker_key: Optional[str] = Query(default=None, description="Filter by bookmaker key (e.g., 'draftkings')"),
     market_key: str = Query(default="h2h", description="Market type (default: h2h for moneyline)"),
     positive_ev_only: bool = Query(default=False, description="Only return events with positive EV opportunities"),
+    min_ev_threshold: Optional[float] = Query(default=None, description="Minimum EV threshold (e.g., 5.0 for $5+ EV)"),
+    ev_method: str = Query(default="any", description="EV method for threshold: 'standard', 'no_vig', 'weighted_fair', or 'any'"),
     db: Session = Depends(get_db)
 ):
     """
@@ -99,24 +102,82 @@ async def get_ev_opportunities(
     - No-Vig EV (vig-removed fair odds)
     - Weighted Fair Odds EV (Pinnacle 50%, DraftKings 25%, FanDuel 25%)
     
-    Returns structured data showing betting opportunities and value analysis.
+    Returns structured data showing betting opportunities and value analysis with pagination support.
+    
+    ## Examples:
+    
+    ### Basic Usage:
+    ```
+    GET /api/ev-opportunities
+    ```
+    Returns first 20 events with all EV calculations.
+    
+    ### Pagination:
+    ```
+    GET /api/ev-opportunities?limit=10&offset=20
+    ```
+    Returns events 21-30 (third page with 10 per page).
+    
+    ### Filter by Sport:
+    ```
+    GET /api/ev-opportunities?sport_key=baseball_mlb&limit=5
+    ```
+    Returns first 5 MLB games with EV calculations.
+    
+    ### High-Value Opportunities:
+    ```
+    GET /api/ev-opportunities?min_ev_threshold=10.0&ev_method=weighted_fair&positive_ev_only=true
+    ```
+    Returns events with weighted fair EV >= $10.
+    
+    ### Bookmaker-Specific Analysis:
+    ```
+    GET /api/ev-opportunities?bookmaker_key=draftkings&min_ev_threshold=5.0&ev_method=any
+    ```
+    Returns DraftKings opportunities with any EV method >= $5.
+    
+    ## Response Format:
+    Returns events array with complete EV analysis, pagination info, and opportunity summaries.
     """
     try:
-        logger.info(f"EV opportunities request: limit={limit}, sport={sport_key}, bookmaker={bookmaker_key}")
+        logger.info(f"EV opportunities request: limit={limit}, offset={offset}, sport={sport_key}, "
+                    f"bookmaker={bookmaker_key}, min_ev={min_ev_threshold}, method={ev_method}")
+        
+        # Validate EV method parameter
+        valid_ev_methods = ['any', 'standard', 'no_vig', 'weighted_fair']
+        if ev_method not in valid_ev_methods:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid ev_method. Must be one of: {', '.join(valid_ev_methods)}"
+            )
         
         # Build base query for events
         query = db.query(EventModel).filter(EventModel.completed.is_(False))
         
         if sport_key:
+            # Validate sport key exists
+            valid_sports = ['baseball_mlb', 'basketball_nba', 'americanfootball_nfl', 'icehockey_nhl']
+            if sport_key not in valid_sports:
+                logger.warning(f"Potentially invalid sport_key: {sport_key}")
             query = query.filter(EventModel.sport_key == sport_key)
         
-        # Order by commence time (soonest first) and limit results
-        events = query.order_by(EventModel.commence_time.asc()).limit(limit).all()
+        # Get total count for pagination info
+        total_events = query.count()
+        
+        # Order by commence time (soonest first) and apply pagination
+        events = query.order_by(EventModel.commence_time.asc()).offset(offset).limit(limit).all()
         
         if not events:
             return {
                 "events": [],
                 "total": 0,
+                "pagination": {
+                    "limit": limit,
+                    "offset": offset,
+                    "total_events": total_events,
+                    "has_next": False,
+                    "has_previous": offset > 0
+                },
                 "message": "No active events found matching criteria"
             }
         
@@ -134,7 +195,7 @@ async def get_ev_opportunities(
                 
                 if not ev_calculations:
                     # If no EV calculations exist, still include event with empty calculations
-                    if not positive_ev_only:
+                    if not positive_ev_only and min_ev_threshold is None:
                         ev_opportunities.append({
                             "event": {
                                 "external_id": event.external_id,
@@ -152,10 +213,22 @@ async def get_ev_opportunities(
                                 "positive_weighted_fair_ev_count": 0,
                                 "best_standard_ev": None,
                                 "best_no_vig_ev": None,
-                                "best_weighted_fair_ev": None
+                                "best_weighted_fair_ev": None,
+                                "meets_threshold": False
                             }
                         })
                     continue
+                
+                # Apply EV threshold filtering
+                if min_ev_threshold is not None:
+                    threshold_met = False
+                    for calc in ev_calculations:
+                        if _meets_ev_threshold(calc, min_ev_threshold, ev_method):
+                            threshold_met = True
+                            break
+                    
+                    if not threshold_met:
+                        continue
                 
                 # Group calculations by bookmaker
                 bookmaker_calculations = {}
@@ -189,6 +262,19 @@ async def get_ev_opportunities(
                 # Calculate opportunities summary
                 summary = _calculate_opportunities_summary(ev_calculations)
                 
+                # Add threshold information to summary
+                if min_ev_threshold is not None:
+                    summary['meets_threshold'] = any(
+                        _meets_ev_threshold(calc, min_ev_threshold, ev_method) 
+                        for calc in ev_calculations
+                    )
+                    summary['threshold_details'] = {
+                        'min_ev_threshold': min_ev_threshold,
+                        'ev_method': ev_method
+                    }
+                else:
+                    summary['meets_threshold'] = True
+                
                 # Apply positive EV filter if requested
                 if positive_ev_only and (
                     summary['positive_standard_ev_count'] == 0 and
@@ -212,18 +298,35 @@ async def get_ev_opportunities(
                 
             except Exception as e:
                 logger.error(f"Error processing EV calculations for event {event.external_id}: {e}")
-                # Continue processing other events
+                # Continue processing other events rather than failing entirely
                 continue
+        
+        # Calculate pagination info
+        has_next = (offset + limit) < total_events
+        has_previous = offset > 0
         
         return {
             "events": ev_opportunities,
             "total": len(ev_opportunities),
+            "pagination": {
+                "limit": limit,
+                "offset": offset,
+                "total_events": total_events,
+                "returned_events": len(ev_opportunities),
+                "has_next": has_next,
+                "has_previous": has_previous,
+                "next_offset": offset + limit if has_next else None,
+                "previous_offset": max(0, offset - limit) if has_previous else None
+            },
             "filters_applied": {
                 "sport_key": sport_key,
                 "bookmaker_key": bookmaker_key,
                 "market_key": market_key,
                 "positive_ev_only": positive_ev_only,
-                "limit": limit
+                "min_ev_threshold": min_ev_threshold,
+                "ev_method": ev_method,
+                "limit": limit,
+                "offset": offset
             },
             "metadata": {
                 "generated_at": datetime.now().isoformat(),
@@ -231,14 +334,38 @@ async def get_ev_opportunities(
                     "standard_ev": "Expected value using raw bookmaker odds (includes vig)",
                     "no_vig_ev": "Expected value using vig-removed fair odds",
                     "weighted_fair_ev": "Expected value using weighted consensus (Pinnacle 50%, DK 25%, FD 25%)"
-                }
+                },
+                "pagination_note": f"Showing events {offset + 1}-{offset + len(ev_opportunities)} of {total_events} total events"
             }
         }
         
+    except HTTPException:
+        # Re-raise HTTP exceptions (like validation errors)
+        raise
     except Exception as e:
-        logger.error(f"Error fetching EV opportunities: {e}")
-        raise HTTPException(status_code=500, detail=f"Error fetching EV opportunities: {str(e)}")
+        logger.error(f"Unexpected error fetching EV opportunities: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail="Internal server error while fetching EV opportunities. Please try again later."
+        )
 
+
+def _meets_ev_threshold(calc: dict, threshold: float, method: str) -> bool:
+    """Check if a calculation meets the specified EV threshold."""
+    if method == 'any':
+        return (
+            (calc.get('standard_ev') is not None and calc['standard_ev'] >= threshold) or
+            (calc.get('no_vig_ev') is not None and calc['no_vig_ev'] >= threshold) or
+            (calc.get('weighted_fair_ev') is not None and calc['weighted_fair_ev'] >= threshold)
+        )
+    elif method == 'standard':
+        return calc.get('standard_ev') is not None and calc['standard_ev'] >= threshold
+    elif method == 'no_vig':
+        return calc.get('no_vig_ev') is not None and calc['no_vig_ev'] >= threshold
+    elif method == 'weighted_fair':
+        return calc.get('weighted_fair_ev') is not None and calc['weighted_fair_ev'] >= threshold
+    else:
+        return False
 
 def _calculate_opportunities_summary(ev_calculations: List[dict]) -> dict:
     """Calculate summary statistics for EV opportunities."""

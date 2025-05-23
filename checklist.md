@@ -20,7 +20,7 @@
 - [x] **Basic Vig Removal (Fair Odds Calculation)**
 - [x] **Weighted Fair Odds Calculation (Pinnacle 50%, DraftKings 25%, FanDuel 25%)**
 - [x] **Multiple EV Calculations (Standard, No-Vig, Weighted Fair Odds)**
-- [x] **Enhanced Opportunities Endpoint (GET /api/ev-opportunities)**
+- [x] **Enhanced Opportunities Endpoint (GET /api/ev-opportunities with pagination and filtering)**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 
