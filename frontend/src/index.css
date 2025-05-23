@@ -1,0 +1,88 @@
+/* Bootstrap CSS imports */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Custom global styles */
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f8f9fa;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Custom component styles */
+.card-hover {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.data-fresh {
+  border-left: 4px solid #198754;
+}
+
+.data-stale {
+  border-left: 4px solid #ffc107;
+}
+
+.data-error {
+  border-left: 4px solid #dc3545;
+}
+
+.ev-positive {
+  color: #198754;
+  font-weight: 600;
+}
+
+.ev-neutral {
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.ev-negative {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.nav-link.active {
+  background-color: rgba(13, 110, 253, 0.1);
+  border-radius: 0.375rem;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Custom utility classes */
+.text-p2p {
+  color: #6f42c1;
+}
+
+.border-p2p {
+  border-color: #6f42c1;
+}
+
+.bg-p2p-light {
+  background-color: rgba(111, 66, 193, 0.1);
+} 
