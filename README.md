@@ -39,6 +39,7 @@ The platform automates value identification, clearly communicates optimal bettin
 - Python 3.9+ (for backend)
 - Node.js 16+ and npm (for frontend)
 - Git
+- **The Odds API key** (get free tier at https://the-odds-api.com)
 
 ### Installation
 
@@ -64,9 +65,15 @@ The platform automates value identification, clearly communicates optimal bettin
 
 4. **Environment Configuration**
    ```bash
-   # Copy environment template and configure your API keys
+   # Backend configuration
+   cd backend
    cp .env.example .env
-   # Edit .env with your API credentials
+   # Edit .env with your API credentials (especially ODDS_API_KEY)
+   
+   # Frontend configuration  
+   cd ../frontend
+   cp .env.example .env
+   # Edit .env with your configuration
    ```
 
 ### Running Locally
@@ -78,16 +85,92 @@ The platform automates value identification, clearly communicates optimal bettin
    python main.py
    ```
 
-2. **Start the Frontend**
+2. **Start the Odds Polling Service (Optional)**
+   ```bash
+   # In a separate terminal
+   cd backend
+   source venv/bin/activate
+   python odds_poller.py
+   ```
+
+3. **Start the Frontend**
    ```bash
    cd frontend
    npm start
    ```
 
-3. **Access the Application**
+4. **Access the Application**
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000
    - API Documentation: http://localhost:8000/docs
+
+## Current Features (v0.1.0)
+
+### ✅ Real-Time Odds Polling
+- **The Odds API Integration**: Configured for NBA data with 3-minute intervals
+- **Comprehensive Data Storage**: Events, bookmakers, odds snapshots with full history
+- **Opening/Closing Odds Tracking**: Automatic detection and flagging for analytics
+- **Rate Limiting & Error Handling**: Robust API management with quota tracking
+- **Multiple Market Support**: Moneyline (h2h), spreads, and totals
+
+### ✅ Backend Infrastructure
+- **FastAPI Application**: RESTful API with automatic documentation
+- **SQLite Database**: Lightweight storage with SQLAlchemy ORM
+- **Configuration Management**: Environment-based settings with Pydantic
+- **Monitoring Endpoints**: API status, polling logs, and database statistics
+
+### 🔧 Testing & Development
+- **Manual Polling Trigger**: `POST /api/poll-odds` for testing
+- **Database Inspection**: View events, logs, and statistics via API
+- **Comprehensive Logging**: Configurable log levels for debugging
+- **Error Tracking**: Full error capture and monitoring
+
+### 📊 Data Features
+- **Historical Preservation**: Complete odds movement tracking
+- **Multi-Bookmaker Support**: US sportsbooks (DraftKings, FanDuel, Caesars, etc.)
+- **Market Flexibility**: Configurable sports, regions, and bet types
+- **Performance Monitoring**: Response times and success rates
+
+## API Examples
+
+```bash
+# Check system health
+curl http://localhost:8000/health
+
+# View recent NBA games
+curl "http://localhost:8000/api/events?limit=5"
+
+# Get polling statistics
+curl http://localhost:8000/api/stats
+
+# Trigger manual odds collection
+curl -X POST http://localhost:8000/api/poll-odds
+
+# View polling history
+curl "http://localhost:8000/api/polling-logs?limit=10"
+```
+
+## Development Status
+
+### Current Implementation (May 23, 2025)
+- ✅ Repository setup and project structure
+- ✅ The Odds API integration and polling system
+- ✅ Database models and data storage
+- ✅ Basic FastAPI backend with monitoring endpoints
+- ✅ Opening and closing odds tracking
+- ✅ Comprehensive error handling and logging
+
+### Next Steps (Week 1-2)
+- [ ] ProphetX API integration for P2P market data
+- [ ] Sporttrade API integration
+- [ ] Basic value detection engine
+- [ ] React frontend dashboard
+
+### Upcoming (Week 3-4)
+- [ ] Odds aggregation and comparison logic
+- [ ] User interface for odds display
+- [ ] Real-time notifications system
+- [ ] Educational content integration
 
 ## Project Structure
 
