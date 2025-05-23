@@ -3,7 +3,7 @@
 ## MVP Dashboard Design Overview
 
 **Last Updated:** May 23, 2025  
-**Version:** 1.1  
+**Version:** 1.2  
 **Target Platform:** Web (Responsive), Mobile-first
 
 ## Design Philosophy
@@ -348,6 +348,268 @@ interface SearchParams {
 
 ---
 
+## Detailed Event View Component Design
+
+### Event View Layout Structure
+```
+┌─────────────────────────────────────┐
+│ [← Back] Lakers @ Warriors    [📍] │
+│ NBA • Today, 7:30 PM ET             │
+├─────────────────────────────────────┤
+│                                     │
+│         EV OPPORTUNITY SUMMARY      │
+│  🔥 High Confidence • Best: +$24.50 │
+│                                     │
+├─────────────────────────────────────┤
+│                                     │
+│       COMPREHENSIVE ODDS TABLE      │
+│                                     │
+├─────────────────────────────────────┤
+│                                     │
+│         EV BREAKDOWN ANALYSIS       │
+│                                     │
+├─────────────────────────────────────┤
+│                                     │
+│        WHY THIS HAS POSITIVE EV     │
+│                                     │
+├─────────────────────────────────────┤
+│                                     │
+│         LIMIT ORDER SECTION         │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+### Event Header Component
+```
+┌─────────────────────────────────────┐
+│ [← Back to Search] Lakers @ Warriors │
+│ 🏀 NBA • Today, 7:30 PM ET          │
+│ ⏰ Game starts in 4h 23m             │
+│                                [📍] │
+└─────────────────────────────────────┘
+```
+
+### EV Opportunity Summary
+```
+┌─────────────────────────────────────┐
+│ 🔥 HIGH CONFIDENCE OPPORTUNITY      │
+│                                     │
+│ Best EV: +$24.50 (DraftKings)      │
+│ Lakers Win at +150 odds             │
+│                                     │
+│ ⭐ Confidence Score: 94/100         │
+│ 📊 Market Efficiency: Low          │
+│ ⏰ Opportunity Window: 4h 23m       │
+└─────────────────────────────────────┘
+```
+
+### Comprehensive Odds Comparison Table
+```
+┌─────────────────────────────────────┐
+│ 📊 Complete Odds Comparison         │
+│                                     │
+│ Outcome    | Pin  | DK   | FD   | EV│
+│ Lakers Win |+145  |+150  |+140  |+24│
+│ Warriors W.|-165  |-170  |-160  |-18│
+│ Over 225.5 |+110  |+105  |+115  | +5│
+│ Under 225.5|-130  |-125  |-135  | -3│
+│                                     │
+│ 💡 Best Opportunities Highlighted   │
+└─────────────────────────────────────┘
+```
+
+### EV Breakdown Analysis
+```
+┌─────────────────────────────────────┐
+│ 📈 Expected Value Analysis          │
+│                                     │
+│ ┌─────────────────────────────────┐ │
+│ │ Weighted Fair EV:    +$24.50   │ │ ← Primary
+│ │ No-Vig EV:          +$21.40   │ │
+│ │ Standard EV:         +$18.20   │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ 🎯 Key Metrics:                     │
+│ • True Probability: 41.2%           │
+│ • Implied Probability: 40.0%       │
+│ • Edge: +1.2%                      │
+│ • Kelly Criterion: 2.4% of bankroll│
+└─────────────────────────────────────┘
+```
+
+### EV Explanation Section
+```
+┌─────────────────────────────────────┐
+│ 🧠 Why This Has Positive EV        │
+│                                     │
+│ 1. 📊 Market Inefficiency          │
+│    DraftKings offering +150 while   │
+│    fair odds should be around +143  │
+│                                     │
+│ 2. 🎯 Sharp Money Indicators        │
+│    • Pinnacle (sharp book): +145    │
+│    • Recent line movement: +140→+150│
+│    • Volume: 67% on Warriors        │
+│                                     │
+│ 3. ⚖️ Calculated Fair Value        │
+│    • Weighted model: 41.2% prob     │
+│    • Vig-removed: 40.8% prob       │
+│    • Historical: 41.5% prob        │
+│                                     │
+│ 💡 This represents a 2.4% edge over │
+│    the true probability of the event│
+└─────────────────────────────────────┘
+```
+
+### Limit Order Component
+```
+┌─────────────────────────────────────┐
+│ 🎯 Set Limit Order                  │
+│                                     │
+│ Current: +150 → Target: [+155    ]  │
+│ ┌─────────────────────────────────┐ │
+│ │ I want to bet Lakers Win        │ │
+│ │ At odds of +155 or better       │ │
+│ │ Stake: $100                     │ │
+│ │                                 │ │
+│ │ Potential Profit: $155          │ │
+│ │ Alert me when: ☑ Available     │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ [Set Alert] [Go to DraftKings]     │
+└─────────────────────────────────────┘
+```
+
+### Detailed Event View Specifications
+
+#### Navigation & Header
+- **Back Button:** Clear navigation to previous page (Dashboard/Search)
+- **Event Title:** Teams with @ symbol (Away @ Home format)
+- **Context Info:** Sport, Date/Time, Countdown to game start
+- **Quick Actions:** Watchlist toggle, Share button
+- **Breadcrumb:** Dashboard > Search > Event (desktop)
+
+#### EV Opportunity Summary
+- **Confidence Indicator:** Visual badge (🔥 High, 📈 Medium, ✅ Low)
+- **Best EV Display:** Prominent callout with bookmaker and odds
+- **Quick Metrics:** Confidence score, market efficiency, time remaining
+- **Visual Hierarchy:** Most important info largest and first
+
+#### Comprehensive Odds Table
+- **All Markets:** H2H, Spreads, Totals displayed in tabs or sections
+- **All Bookmakers:** Minimum 3 books (Pinnacle, DraftKings, FanDuel)
+- **EV Highlighting:** Color-coded cells for positive/negative EV
+- **Sortable Columns:** Users can sort by EV, odds, bookmaker
+- **Mobile Optimization:** Horizontal scroll or accordion layout
+
+#### EV Analysis Section
+```typescript
+interface EVAnalysis {
+  weightedFairEV: number      // Primary EV calculation
+  noVigEV: number            // Vig-removed calculation  
+  standardEV: number         // Raw odds calculation
+  trueProbability: number    // Calculated fair probability
+  impliedProbability: number // Bookmaker's implied probability
+  edge: number              // Percentage edge
+  kellyPercentage: number   // Suggested bet sizing
+}
+```
+
+#### EV Explanation Logic
+- **Market Inefficiency:** Why odds are mispriced
+- **Sharp Money Indicators:** Professional betting patterns
+- **Fair Value Calculation:** How true probability was determined
+- **Historical Context:** Past performance in similar situations
+- **Risk Assessment:** Variance and confidence intervals
+
+#### Limit Order Functionality
+- **Target Odds Input:** User-defined odds threshold
+- **Stake Amount:** Bet sizing with kelly suggestion
+- **Alert Options:** Email, push notification, SMS
+- **Bookmaker Links:** Direct links with affiliate tracking
+- **Order History:** Track previous limit orders
+
+### Mobile Optimizations
+
+#### Mobile Event View Layout
+```
+┌─────────────────────────────────────┐
+│ [← Back] Lakers @ Warriors    [📍] │
+│ 🏀 NBA • 7:30 PM • 4h 23m           │
+├─────────────────────────────────────┤
+│ 🔥 BEST: +$24.50 (DraftKings)      │
+│ Lakers Win +150                     │
+├─────────────────────────────────────┤
+│ 📊 Odds (Tap to expand)             │
+│ DK: +150 | Pin: +145 | FD: +140    │
+├─────────────────────────────────────┤
+│ 📈 EV: W:+$24.5 NV:+$21.4 S:+$18  │
+├─────────────────────────────────────┤
+│ 🧠 Why Positive EV? (Tap to read)   │
+├─────────────────────────────────────┤
+│ 🎯 Set Alert for Better Odds       │
+│ [Target: +155] [Set Alert]          │
+└─────────────────────────────────────┘
+```
+
+#### Mobile Interaction Patterns
+- **Collapsible Sections:** Expandable details to save screen space
+- **Swipe Gestures:** Swipe between different markets/outcomes
+- **Sticky Headers:** Key info stays visible while scrolling
+- **Bottom Action Bar:** Primary actions easily reachable
+
+### Data Visualization Components
+
+#### EV Trend Chart (Future Enhancement)
+```
+┌─────────────────────────────────────┐
+│ 📈 EV Over Time (Last 24h)          │
+│                                     │
+│ +$30 ┌─────────────────┐            │
+│ +$25 │        ●●●●●●●●●│            │
+│ +$20 │      ●●        │            │
+│ +$15 │    ●●          │            │
+│ +$10 │  ●●            │            │
+│ +$5  │●●              │            │
+│ $0   └─────────────────┘            │
+│      12h   6h    Now                │
+└─────────────────────────────────────┘
+```
+
+#### Probability Distribution
+```
+┌─────────────────────────────────────┐
+│ 🎲 Outcome Probabilities            │
+│                                     │
+│ Lakers Win    ████████░░ 41.2%      │
+│ Warriors Win  ██████████ 58.8%      │
+│                                     │
+│ Fair Odds: Lakers +143, Warriors -167│
+└─────────────────────────────────────┘
+```
+
+### Advanced Features
+
+#### Historical Performance
+- **Head-to-Head Record:** Last 10 games between teams
+- **Recent Form:** Win/loss streaks and performance trends
+- **Venue Analysis:** Home/away performance differences
+- **Injury Report:** Key player availability impact
+
+#### Market Analysis
+- **Line Movement:** How odds have changed over time
+- **Betting Volume:** Public vs sharp money percentages
+- **Similar Games:** Historical outcomes in comparable situations
+- **Weather Impact:** For outdoor sports
+
+#### Risk Management
+- **Variance Calculation:** Expected outcome distribution
+- **Confidence Intervals:** Range of likely EV values
+- **Bankroll Recommendations:** Kelly criterion and fractional kelly
+- **Stop-Loss Suggestions:** Risk management thresholds
+
+---
+
 ## Color Palette & Visual Design
 
 ### Primary Colors
@@ -460,12 +722,39 @@ interface SearchResults {
 }
 ```
 
+#### 7. **Detailed Event View Component**
+```typescript
+interface DetailedEventView {
+  event: EventData
+  evAnalysis: EVAnalysis
+  oddsComparison: OddsComparison[]
+  explanation: EVExplanation
+  limitOrder: LimitOrderConfig
+  onBack: () => void
+  onSetAlert: (config: AlertConfig) => void
+}
+```
+
+#### 8. **Limit Order Component**
+```typescript
+interface LimitOrderComponent {
+  currentOdds: number
+  targetOdds: number
+  stakeAmount: number
+  outcome: string
+  bookmaker: string
+  onSetAlert: (config: LimitOrderConfig) => void
+}
+```
+
 ## Data Flow & API Integration
 
 ### Primary API Endpoints Used
 1. **`GET /api/ev-opportunities`** - Main dashboard data
 2. **`GET /api/events`** - Upcoming events list
 3. **`GET /api/stats`** - Quick stats bar data
+4. **`GET /api/events/{event_id}/analysis`** - Detailed event analysis
+5. **`POST /api/alerts`** - Create limit order alerts
 
 ### Real-time Updates Strategy
 - **Initial Load:** Full data fetch
@@ -556,6 +845,12 @@ interface SearchResults {
     - SearchResults.tsx
     - SearchFilters.tsx
     - ResultCard.tsx
+  /event-detail
+    - EventHeader.tsx
+    - EVAnalysis.tsx
+    - OddsTable.tsx
+    - EVExplanation.tsx
+    - LimitOrder.tsx
   /shared
     - Button.tsx
     - Card.tsx
@@ -601,6 +896,7 @@ const tokens = {
 - [ ] Performance-optimized approach ✓
 - [ ] Scalable component architecture ✓
 - [ ] Search & Results component design ✓
+- [ ] Detailed Event View design ✓
 
 ---
 

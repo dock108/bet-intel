@@ -23,6 +23,7 @@
 - [x] **Enhanced Opportunities Endpoint (GET /api/ev-opportunities with pagination and filtering)**
 - [x] **Dashboard Wireframe & Responsive Optimization**
 - [x] **Odds Search Bar**
+- [x] **Odds Results Display (Detailed Event View)**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 
@@ -39,7 +40,6 @@
 
 ## 🚧 Frontend Development (v0.dev)
 
-- [ ] **Odds Results Display**
 - [ ] **Recommended Odds Component**
 - [ ] **Custom Limit Order Input Form**
 - [ ] **Limit Order Monitoring UI & Notifications**
