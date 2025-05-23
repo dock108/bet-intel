@@ -19,6 +19,7 @@
 - [x] **American Odds to Implied Probability Conversion**
 - [x] **Basic Vig Removal (Fair Odds Calculation)**
 - [x] **Weighted Fair Odds Calculation (Pinnacle 50%, DraftKings 25%, FanDuel 25%)**
+- [x] **Multiple EV Calculations (Standard, No-Vig, Weighted Fair Odds)**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 

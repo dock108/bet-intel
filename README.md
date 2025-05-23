@@ -255,6 +255,7 @@ bet-intel/
 *   [Odds Conversion (American Odds to Implied Probability)](./docs/odds_conversion.md)
 *   [Vig Removal & Fair Odds Calculation](./docs/vig_removal.md)
 *   [Weighted Fair Odds Calculation (Pinnacle/DraftKings/FanDuel)](./docs/fair_odds_weighted.md)
+*   [Multiple EV Calculations (Standard, No-Vig, Weighted Fair Odds)](./docs/ev_calculations.md)
 
 ## Getting Started
 

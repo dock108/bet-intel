@@ -67,6 +67,7 @@ class EventModel(Base):
     # Relationships
     sport = relationship("SportModel", back_populates="events")
     odds_snapshots = relationship("OddsSnapshotModel", back_populates="event")
+    ev_calculations = relationship("EVCalculationModel", back_populates="event")
 
 
 class BookmakerModel(Base):
@@ -84,6 +85,7 @@ class BookmakerModel(Base):
 
     # Relationships
     odds_snapshots = relationship("OddsSnapshotModel", back_populates="bookmaker")
+    ev_calculations = relationship("EVCalculationModel", back_populates="bookmaker")
 
 
 class OddsSnapshotModel(Base):
@@ -113,6 +115,61 @@ class OddsSnapshotModel(Base):
     # Relationships
     event = relationship("EventModel", back_populates="odds_snapshots")
     bookmaker = relationship("BookmakerModel", back_populates="odds_snapshots")
+
+    # Composite index for efficient queries
+    __table_args__ = (
+        {'sqlite_autoincrement': True}
+    )
+
+
+class EVCalculationModel(Base):
+    """Model for storing multiple Expected Value calculations for each event/bookmaker/market combination"""
+    __tablename__ = "ev_calculations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("events.id"), nullable=False)
+    bookmaker_id = Column(Integer, ForeignKey("bookmakers.id"), nullable=False)
+    market_key = Column(String(50), nullable=False)  # h2h, spreads, totals
+    
+    # Outcome information
+    outcome_name = Column(String(100), nullable=False)  # Team name or outcome description
+    outcome_index = Column(Integer, nullable=False)  # 0 for outcome A, 1 for outcome B, etc.
+    offered_odds = Column(Float, nullable=False)  # American odds offered by bookmaker
+    
+    # Three types of EV calculations
+    standard_ev = Column(Float)  # EV using raw bookmaker odds (with vig)
+    no_vig_ev = Column(Float)    # EV using vig-removed fair odds
+    weighted_fair_ev = Column(Float)  # EV using weighted fair odds (Pinnacle 50%, DK 25%, FD 25%)
+    
+    # Supporting data for each calculation method
+    standard_implied_probability = Column(Float)  # Implied probability from raw odds
+    no_vig_fair_probability = Column(Float)      # Fair probability after vig removal
+    weighted_fair_probability = Column(Float)    # Fair probability from weighted calculation
+    
+    # Reference odds used in calculations
+    no_vig_fair_odds = Column(Float)      # Fair odds after vig removal
+    weighted_fair_odds = Column(Float)    # Weighted fair odds
+    
+    # Calculation metadata
+    calculation_method_details = Column(Text)  # JSON string with calculation details
+    books_used_in_weighted = Column(String(200))  # Books used for weighted calculation
+    vig_percentage = Column(Float)        # Vig percentage for no-vig calculation
+    
+    # Timestamps
+    calculated_at = Column(DateTime(timezone=True), server_default=func.now())
+    odds_snapshot_time = Column(DateTime(timezone=True))  # When the odds were captured
+    
+    # Quality indicators
+    has_positive_standard_ev = Column(Boolean, default=False)
+    has_positive_no_vig_ev = Column(Boolean, default=False)
+    has_positive_weighted_ev = Column(Boolean, default=False)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Relationships
+    event = relationship("EventModel", back_populates="ev_calculations")
+    bookmaker = relationship("BookmakerModel", back_populates="ev_calculations")
 
     # Composite index for efficient queries
     __table_args__ = (
