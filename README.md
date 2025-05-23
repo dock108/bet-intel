@@ -253,6 +253,7 @@ bet-intel/
 *   [Odds Polling System](./docs/odds_polling.md)
 *   [Odds Aggregation & Discrepancy Detection](./docs/odds_aggregation_discrepancy.md)
 *   [Odds Conversion (American Odds to Implied Probability)](./docs/odds_conversion.md)
+*   [Vig Removal & Fair Odds Calculation](./docs/vig_removal.md)
 
 ## Getting Started
 

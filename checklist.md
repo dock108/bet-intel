@@ -17,6 +17,7 @@
 - [x] **Initial Discrepancy Detection Logic**
 - [x] **Basic Documentation & Endpoint Creation**
 - [x] **American Odds to Implied Probability Conversion**
+- [x] **Basic Vig Removal (Fair Odds Calculation)**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 

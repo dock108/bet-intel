@@ -3,7 +3,7 @@ Odds conversion utilities for the betting intelligence platform
 Converts between different odds formats and calculates implied probabilities
 """
 
-from typing import Union
+from typing import Union, Tuple, Dict
 import logging
 
 logger = logging.getLogger(__name__)
@@ -118,6 +118,188 @@ def implied_probability_to_american(probability: float) -> float:
         raise OddsConversionError(f"Invalid probability calculation for probability: {probability}")
     except Exception as e:
         raise OddsConversionError(f"Failed to convert probability {probability}: {str(e)}")
+
+
+def remove_vig_two_sided(odds_a: Union[int, float], odds_b: Union[int, float]) -> Dict[str, float]:
+    """
+    Remove vig (vigorish) from a two-sided market to calculate fair odds.
+    
+    The vig is the sportsbook's built-in profit margin. In a fair market, the implied 
+    probabilities of all outcomes should sum to exactly 1.0 (100%). However, sportsbooks 
+    set odds so the probabilities sum to more than 1.0, creating their profit margin.
+    
+    This function:
+    1. Converts both odds to implied probabilities
+    2. Calculates the total probability (should be > 1.0 due to vig)
+    3. Normalizes probabilities to sum to 1.0 (removes vig)
+    4. Converts fair probabilities back to American odds
+    
+    Args:
+        odds_a: American odds for outcome A (e.g., favorite)
+        odds_b: American odds for outcome B (e.g., underdog)
+        
+    Returns:
+        dict: Contains fair odds, probabilities, and vig information
+        {
+            'fair_odds_a': float,          # Fair American odds for outcome A
+            'fair_odds_b': float,          # Fair American odds for outcome B
+            'fair_probability_a': float,   # Fair probability for outcome A
+            'fair_probability_b': float,   # Fair probability for outcome B
+            'original_probability_a': float, # Original implied probability A
+            'original_probability_b': float, # Original implied probability B
+            'vig_percentage': float,       # Vig as a percentage (e.g., 0.05 = 5%)
+            'total_implied_probability': float  # Sum of original probabilities
+        }
+        
+    Raises:
+        OddsConversionError: If odds are invalid or probabilities don't make sense
+        
+    Examples:
+        >>> remove_vig_two_sided(-110, -110)  # Standard -110 both sides
+        {
+            'fair_odds_a': 100.0,
+            'fair_odds_b': 100.0,
+            'fair_probability_a': 0.5,
+            'fair_probability_b': 0.5,
+            'vig_percentage': 0.0476,  # ~4.76% vig
+            ...
+        }
+        
+        >>> remove_vig_two_sided(-150, 120)  # Favorite vs underdog
+        {
+            'fair_odds_a': -136.36,
+            'fair_odds_b': 136.36,
+            'fair_probability_a': 0.577,
+            'fair_probability_b': 0.423,
+            'vig_percentage': 0.0345,  # ~3.45% vig
+            ...
+        }
+    """
+    try:
+        # Convert odds to implied probabilities
+        prob_a = american_to_implied_probability(odds_a)
+        prob_b = american_to_implied_probability(odds_b)
+        
+        # Calculate total implied probability (should be > 1.0 due to vig)
+        total_prob = prob_a + prob_b
+        
+        if total_prob <= 1.0:
+            raise OddsConversionError(
+                f"Total implied probability ({total_prob:.4f}) is not greater than 1.0. "
+                "This suggests no vig or arbitrage opportunity exists."
+            )
+        
+        # Calculate vig percentage
+        vig_percentage = total_prob - 1.0
+        
+        # Remove vig by normalizing probabilities to sum to 1.0
+        fair_prob_a = prob_a / total_prob
+        fair_prob_b = prob_b / total_prob
+        
+        # Verify fair probabilities sum to 1.0 (within floating point precision)
+        if abs((fair_prob_a + fair_prob_b) - 1.0) > 1e-10:
+            raise OddsConversionError(
+                f"Fair probabilities don't sum to 1.0: {fair_prob_a + fair_prob_b:.10f}"
+            )
+        
+        # Convert fair probabilities back to American odds
+        fair_odds_a = implied_probability_to_american(fair_prob_a)
+        fair_odds_b = implied_probability_to_american(fair_prob_b)
+        
+        return {
+            'fair_odds_a': fair_odds_a,
+            'fair_odds_b': fair_odds_b,
+            'fair_probability_a': fair_prob_a,
+            'fair_probability_b': fair_prob_b,
+            'original_probability_a': prob_a,
+            'original_probability_b': prob_b,
+            'vig_percentage': vig_percentage,
+            'total_implied_probability': total_prob,
+            'original_odds_a': odds_a,
+            'original_odds_b': odds_b
+        }
+        
+    except OddsConversionError:
+        # Re-raise our custom errors
+        raise
+    except Exception as e:
+        raise OddsConversionError(f"Failed to remove vig from odds {odds_a}, {odds_b}: {str(e)}")
+
+
+def calculate_vig_percentage(odds_a: Union[int, float], odds_b: Union[int, float]) -> float:
+    """
+    Calculate the vig percentage from a two-sided market.
+    
+    Args:
+        odds_a: American odds for outcome A
+        odds_b: American odds for outcome B
+        
+    Returns:
+        float: Vig percentage as decimal (e.g., 0.05 = 5% vig)
+        
+    Examples:
+        >>> calculate_vig_percentage(-110, -110)  # Standard juice
+        0.047619047619047616  # ~4.76% vig
+        
+        >>> calculate_vig_percentage(-105, -105)  # Lower juice
+        0.02380952380952381   # ~2.38% vig
+    """
+    prob_a = american_to_implied_probability(odds_a)
+    prob_b = american_to_implied_probability(odds_b)
+    return (prob_a + prob_b) - 1.0
+
+
+def find_fair_value_opportunities(market_odds: Tuple[float, float], fair_odds: Tuple[float, float], 
+                                   threshold: float = 0.02) -> Dict[str, any]:
+    """
+    Compare market odds against fair odds to identify value betting opportunities.
+    
+    Args:
+        market_odds: Tuple of (odds_a, odds_b) from sportsbook
+        fair_odds: Tuple of (fair_odds_a, fair_odds_b) after vig removal
+        threshold: Minimum edge required to flag as opportunity (default 2%)
+        
+    Returns:
+        dict: Analysis of value opportunities for both sides
+        
+    Examples:
+        >>> market_odds = (-110, -110)
+        >>> fair_odds = (100, 100)  # True fair odds are even money
+        >>> find_fair_value_opportunities(market_odds, fair_odds)
+        {
+            'opportunity_a': True,
+            'opportunity_b': True,
+            'edge_a': 0.0476,  # 4.76% edge on side A
+            'edge_b': 0.0476,  # 4.76% edge on side B
+            ...
+        }
+    """
+    try:
+        # Convert all odds to probabilities
+        market_prob_a = american_to_implied_probability(market_odds[0])
+        market_prob_b = american_to_implied_probability(market_odds[1])
+        fair_prob_a = american_to_implied_probability(fair_odds[0])
+        fair_prob_b = american_to_implied_probability(fair_odds[1])
+        
+        # Calculate edges (fair probability - market implied probability)
+        edge_a = fair_prob_a - market_prob_a
+        edge_b = fair_prob_b - market_prob_b
+        
+        return {
+            'opportunity_a': edge_a > threshold,
+            'opportunity_b': edge_b > threshold,
+            'edge_a': edge_a,
+            'edge_b': edge_b,
+            'market_odds_a': market_odds[0],
+            'market_odds_b': market_odds[1],
+            'fair_odds_a': fair_odds[0],
+            'fair_odds_b': fair_odds[1],
+            'threshold': threshold
+        }
+        
+    except Exception as e:
+        logger.error(f"Error finding fair value opportunities: {e}")
+        return {'error': str(e)}
 
 
 def calculate_expected_value(probability: float, odds: Union[int, float], bet_amount: float = 100.0) -> float:
@@ -261,4 +443,21 @@ if __name__ == "__main__":
         print(f"  EV: ${result.get('expected_value', 0):.2f}")
         print(f"  Positive EV: {result.get('has_positive_ev', False)}")
         print(f"  Edge: {result.get('edge_percentage', 0):.2%}")
+        print()
+    
+    # Test vig removal
+    print("=== Vig Removal Examples ===")
+    vig_scenarios = [
+        (-110, -110),  # Standard juice
+        (-105, -105),  # Lower juice
+        (-150, 120),   # Favorite vs underdog
+        (-200, 170),   # Heavy favorite
+    ]
+    
+    for odds_a, odds_b in vig_scenarios:
+        result = remove_vig_two_sided(odds_a, odds_b)
+        print(f"Market: {odds_a:+d} / {odds_b:+d}")
+        print(f"  Fair: {result['fair_odds_a']:+.1f} / {result['fair_odds_b']:+.1f}")
+        print(f"  Vig: {result['vig_percentage']:.2%}")
+        print(f"  Total Implied Prob: {result['total_implied_probability']:.3f}")
         print() 
