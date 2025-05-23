@@ -3,7 +3,7 @@
 ## MVP Dashboard Design Overview
 
 **Last Updated:** May 23, 2025  
-**Version:** 1.2  
+**Version:** 1.3  
 **Target Platform:** Web (Responsive), Mobile-first
 
 ## Design Philosophy
@@ -610,6 +610,275 @@ interface EVAnalysis {
 
 ---
 
+## Recommended Odds Component Design
+
+### P2P Platform Integration Strategy
+
+The Recommended Odds Component serves as a **manual guidance system** that bridges EV analysis with P2P platform execution. This component provides users with specific odds recommendations to manually set on peer-to-peer betting exchanges.
+
+### Component Layout Structure
+```
+┌─────────────────────────────────────┐
+│ 🎯 RECOMMENDED P2P ODDS             │
+│ Manual Entry Guide                  │
+├─────────────────────────────────────┤
+│                                     │
+│    P2P PLATFORM RECOMMENDATIONS     │
+│                                     │
+├─────────────────────────────────────┤
+│                                     │
+│       MANUAL ENTRY GUIDANCE        │
+│                                     │
+├─────────────────────────────────────┤
+│                                     │
+│       EDUCATIONAL CONTENT           │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+### P2P Platform Recommendations Section
+```
+┌─────────────────────────────────────┐
+│ 🔥 Set These Odds Manually          │
+│                                     │
+│ ┌─────────────────────────────────┐ │
+│ │ 🏆 Novig                       │ │
+│ │ Lakers Win: +165               │ │
+│ │ Expected Fill: 15-30 min       │ │
+│ │ Potential Profit: +$26.50     │ │
+│ │ [Go to Novig] [Copy Odds]      │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ ┌─────────────────────────────────┐ │
+│ │ 📈 Sporttrade                  │ │
+│ │ Lakers Win: +160               │ │
+│ │ Expected Fill: 20-45 min       │ │
+│ │ Potential Profit: +$24.80     │ │
+│ │ [Go to Sporttrade] [Copy Odds] │ │
+│ └─────────────────────────────────┘ │
+│                                     │
+│ ┌─────────────────────────────────┐ │
+│ │ ⚡ ProphetX                     │ │
+│ │ Lakers Win: +158               │ │
+│ │ Expected Fill: 25-60 min       │ │
+│ │ Potential Profit: +$23.70     │ │
+│ │ [Go to ProphetX] [Copy Odds]   │ │
+│ └─────────────────────────────────┘ │
+└─────────────────────────────────────┘
+```
+
+### Manual Entry Guidance Section
+```
+┌─────────────────────────────────────┐
+│ 📋 How to Set These Odds Manually   │
+│                                     │
+│ 1. 🔗 Click platform link above     │
+│ 2. 🔍 Find "Lakers @ Warriors"       │
+│ 3. 📝 Select "Lakers Win"            │
+│ 4. 💰 Enter recommended odds         │
+│ 5. 🎯 Set your stake amount          │
+│ 6. ✅ Submit limit order             │
+│                                     │
+│ 💡 Your order will fill when someone │
+│    accepts your odds or better      │
+└─────────────────────────────────────┘
+```
+
+### Educational Content Section
+```
+┌─────────────────────────────────────┐
+│ 🎓 Why P2P Betting?                 │
+│                                     │
+│ ✅ Better Odds: Set your own prices  │
+│ ✅ No Limits: Bet any amount        │
+│ ✅ Peer Trading: Bet against others  │
+│ ✅ Fair Markets: Lower vig fees      │
+│                                     │
+│ ⚠️  Remember: Orders may not fill    │
+│    immediately. Be patient!         │
+│                                     │
+│ [Learn More About P2P] [FAQ]        │
+└─────────────────────────────────────┘
+```
+
+### Recommended Odds Component Specifications
+
+#### P2P Platform Cards
+- **Platform Branding:** Clear logos and colors for each platform
+- **Recommended Odds:** Calculated based on EV analysis and platform liquidity
+- **Expected Fill Time:** Historical data on order completion times
+- **Potential Profit:** Real-time calculation based on stake
+- **Direct Links:** Affiliate-tracked deep links to specific events
+- **Copy Functionality:** One-click copy of recommended odds
+
+#### Odds Calculation Logic
+```typescript
+interface P2POddsRecommendation {
+  platform: 'novig' | 'sporttrade' | 'prophetx'
+  recommendedOdds: number        // Calculated fair value + margin
+  expectedFillTime: string       // "15-30 min" based on liquidity
+  potentialProfit: number        // Based on default stake
+  confidence: 'high' | 'medium' | 'low'
+  liquidityScore: number         // 1-100 based on historical volume
+}
+```
+
+#### Calculation Methodology
+- **Base Fair Odds:** Start with weighted fair value calculation
+- **Platform Premium:** Add 5-15 points based on platform liquidity
+- **Fill Probability:** Adjust odds based on historical fill rates
+- **Time Sensitivity:** Factor in game start time (closer = higher odds)
+
+#### Manual Entry Guidance
+- **Step-by-Step Instructions:** Clear, numbered process
+- **Visual Cues:** Icons and highlights for each step
+- **Platform-Specific Tips:** Unique guidance for each P2P platform
+- **Error Prevention:** Common mistakes and how to avoid them
+
+#### Educational Components
+- **P2P Benefits:** Why use peer-to-peer vs traditional sportsbooks
+- **Risk Disclosure:** Orders may not fill, partial fills possible
+- **Best Practices:** Timing, stake sizing, patience requirements
+- **FAQ Links:** Detailed explanations of P2P betting concepts
+
+### Mobile Optimization
+
+#### Mobile P2P Recommendations Layout
+```
+┌─────────────────────────────────────┐
+│ 🎯 P2P Odds Recommendations         │
+├─────────────────────────────────────┤
+│ 🏆 Novig • Lakers +165             │
+│ Profit: +$26.50 • Fill: 15-30m     │
+│ [Go to Novig] [Copy: +165]          │
+├─────────────────────────────────────┤
+│ 📈 Sporttrade • Lakers +160        │
+│ Profit: +$24.80 • Fill: 20-45m     │
+│ [Go to Sporttrade] [Copy: +160]     │
+├─────────────────────────────────────┤
+│ ⚡ ProphetX • Lakers +158           │
+│ Profit: +$23.70 • Fill: 25-60m     │
+│ [Go to ProphetX] [Copy: +158]       │
+└─────────────────────────────────────┘
+```
+
+#### Mobile Interaction Patterns
+- **One-Tap Copy:** Odds automatically copied to clipboard
+- **Deep Linking:** Direct navigation to specific event on platform
+- **Swipe Actions:** Swipe to reveal additional platform options
+- **Quick Stakes:** Pre-set stake amounts for rapid calculation
+
+### Integration with Existing Event View
+
+#### Placement Strategy
+- **Position:** Between EV Analysis and Limit Order Alert sections
+- **Hierarchy:** Secondary to traditional sportsbook analysis
+- **Visual Weight:** Prominent but not overwhelming
+- **Flow:** Natural progression from analysis to action
+
+#### Data Synchronization
+- **Real-Time Updates:** Odds refresh every 30 seconds
+- **Availability Checks:** Verify event exists on each platform
+- **Liquidity Monitoring:** Update fill time estimates based on volume
+- **Error Handling:** Graceful degradation if platform unavailable
+
+### P2P Platform Specifications
+
+#### Novig Integration
+- **Focus:** Highest liquidity, fastest fills
+- **Odds Strategy:** Aggressive (fair value + 8-12 points)
+- **Stake Recommendations:** $50-500 typical range
+- **Deep Link Format:** `novig.com/bet/{event_id}?odds={odds}&stake={stake}`
+
+#### Sporttrade Integration
+- **Focus:** Balanced liquidity and odds
+- **Odds Strategy:** Moderate (fair value + 6-10 points)  
+- **Stake Recommendations:** $25-300 typical range
+- **Deep Link Format:** `sporttrade.com/markets/{sport}/{event}?side={outcome}`
+
+#### ProphetX Integration
+- **Focus:** Advanced traders, higher stakes
+- **Odds Strategy:** Conservative (fair value + 4-8 points)
+- **Stake Recommendations:** $100-1000 typical range
+- **Deep Link Format:** `prophetx.com/event/{event_id}/bet?type=back&odds={odds}`
+
+### Advanced Features
+
+#### Smart Recommendations
+- **Liquidity Scoring:** Rank platforms by expected fill probability
+- **Time-Based Adjustments:** More aggressive odds closer to game time
+- **User Preferences:** Remember preferred platforms and stake sizes
+- **Historical Performance:** Track which recommendations actually filled
+
+#### Copy & Share Functionality
+- **Odds Copying:** One-click copy of recommended odds to clipboard
+- **Deep Link Sharing:** Share specific recommendations with others
+- **Screenshot Tools:** Easy capture of recommendations for manual entry
+- **QR Codes:** Mobile-friendly platform access
+
+#### Risk Management
+- **Stake Suggestions:** Based on Kelly criterion and bankroll management
+- **Diversification Alerts:** Warn against over-concentration on single bet
+- **Fill Rate Disclosure:** Historical percentage of similar orders that filled
+- **Time Warnings:** Alert users about approaching game start times
+
+### Error States & Edge Cases
+
+#### Platform Unavailable
+```
+┌─────────────────────────────────────┐
+│ ⚠️  Platform Temporarily Unavailable│
+│                                     │
+│ Novig is currently down for         │
+│ maintenance. Try Sporttrade or      │
+│ ProphetX instead.                   │
+│                                     │
+│ [Check Status] [Alternative Platforms]│
+└─────────────────────────────────────┘
+```
+
+#### Low Liquidity Warning
+```
+┌─────────────────────────────────────┐
+│ 🐌 Low Liquidity Alert              │
+│                                     │
+│ This event has limited trading      │
+│ volume. Your order may take longer  │
+│ to fill or may not fill at all.     │
+│                                     │
+│ [Understand Risks] [Continue Anyway]│
+└─────────────────────────────────────┘
+```
+
+#### Event Not Available
+```
+┌─────────────────────────────────────┐
+│ 🚫 Event Not Listed                 │
+│                                     │
+│ This event isn't available on P2P   │
+│ platforms yet. Try traditional      │
+│ sportsbooks instead.                │
+│                                     │
+│ [View Sportsbook Options]           │
+└─────────────────────────────────────┘
+```
+
+### Performance Considerations
+
+#### Loading Optimization
+- **Lazy Loading:** Load P2P data after main event analysis
+- **Caching Strategy:** Cache platform availability for 5 minutes
+- **Progressive Enhancement:** Show basic odds first, enhance with fill times
+- **Timeout Handling:** Fallback to manual entry if API calls fail
+
+#### Real-Time Updates
+- **WebSocket Integration:** Live odds updates from P2P platforms
+- **Debounced Updates:** Limit update frequency to prevent UI flicker
+- **Background Sync:** Refresh data when user returns to tab
+- **Offline Handling:** Show last known good data with timestamp
+
+---
+
 ## Color Palette & Visual Design
 
 ### Primary Colors
@@ -747,6 +1016,17 @@ interface LimitOrderComponent {
 }
 ```
 
+#### 9. **Recommended Odds Component**
+```typescript
+interface RecommendedOddsComponent {
+  event: EventData
+  p2pRecommendations: P2POddsRecommendation[]
+  userStake: number
+  onCopyOdds: (platform: string, odds: number) => void
+  onPlatformNavigate: (platform: string, deepLink: string) => void
+}
+```
+
 ## Data Flow & API Integration
 
 ### Primary API Endpoints Used
@@ -755,6 +1035,7 @@ interface LimitOrderComponent {
 3. **`GET /api/stats`** - Quick stats bar data
 4. **`GET /api/events/{event_id}/analysis`** - Detailed event analysis
 5. **`POST /api/alerts`** - Create limit order alerts
+6. **`GET /api/p2p/recommendations/{event_id}`** - P2P platform odds recommendations
 
 ### Real-time Updates Strategy
 - **Initial Load:** Full data fetch
@@ -851,6 +1132,7 @@ interface LimitOrderComponent {
     - OddsTable.tsx
     - EVExplanation.tsx
     - LimitOrder.tsx
+    - RecommendedOdds.tsx
   /shared
     - Button.tsx
     - Card.tsx
@@ -897,6 +1179,7 @@ const tokens = {
 - [ ] Scalable component architecture ✓
 - [ ] Search & Results component design ✓
 - [ ] Detailed Event View design ✓
+- [ ] Recommended Odds Component design ✓
 
 ---
 

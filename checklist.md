@@ -24,6 +24,7 @@
 - [x] **Dashboard Wireframe & Responsive Optimization**
 - [x] **Odds Search Bar**
 - [x] **Odds Results Display (Detailed Event View)**
+- [x] **Recommended Odds Component (P2P Manual Guidance)**
 
 ## 🚧 Immediate Next Steps (Core Backend)
 
@@ -40,7 +41,6 @@
 
 ## 🚧 Frontend Development (v0.dev)
 
-- [ ] **Recommended Odds Component**
 - [ ] **Custom Limit Order Input Form**
 - [ ] **Limit Order Monitoring UI & Notifications**
 
