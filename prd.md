@@ -2,7 +2,7 @@
 
 ## Overview
 
-This product leverages real-time sportsbook odds data from top market-makers (DraftKings, FanDuel, Pinnacle, or Caesars) to empower users to identify and set advantageous "limit order-style" bets on emerging peer-to-peer (P2P) betting platforms like Sporttrade, ProphetX, and Novig. The goal is to automate value identification, clearly communicate optimal betting strategies, educate users on the unique P2P betting model, and monetize through premium subscriptions and affiliate links.
+This product leverages real-time sportsbook odds data from top market-makers to empower users to identify and set advantageous "limit order-style" bets on emerging peer-to-peer (P2P) betting platforms like Sporttrade, ProphetX, and Novig. Initially, the product will use the free tier of The Odds API for odds data. The goal is to automate value identification, clearly communicate optimal betting strategies, educate users on the unique P2P betting model, and monetize through premium subscriptions and affiliate links.
 
 ## Objectives
 
@@ -42,9 +42,8 @@ This product leverages real-time sportsbook odds data from top market-makers (Dr
 
 ### 1. Odds Aggregation & Scraping
 
-* Real-time odds sourcing from selected sportsbook(s).
-* P2P odds sourcing from selected peer-to-peer exchange(s).
-* Liquidity data from P2P exchanges for detailed insights.
+* Real-time odds sourcing initially from The Odds API (free tier).
+* P2P odds sourcing from selected peer-to-peer exchange(s), initially through scraping liquidity data if necessary.
 
 ### 2. AI-Driven Value Calculation (Premium)
 
@@ -85,7 +84,7 @@ This product leverages real-time sportsbook odds data from top market-makers (Dr
 * Frontend: Minimal React web app, mobile-first responsive design.
 * Database: SQLite for MVP; PostgreSQL/Supabase later.
 * Deployment: Vercel or similar platform.
-* APIs & Scraping: Pinnacle API (official), ProphetX API (official), Sporttrade API (official/request), DraftKings, FanDuel, Caesars via scraping or aggregator (OddsAPI recommended).
+* APIs & Scraping: Initially using The Odds API (free tier); ProphetX API (official), Sporttrade API (official/request); liquidity scraping as necessary for P2P books.
 
 ## Monetization Strategy
 
@@ -94,13 +93,13 @@ This product leverages real-time sportsbook odds data from top market-makers (Dr
 
 ## Roadmap & Timeline (60 Days MVP)
 
-| Week | Milestone                                                                      |
-| ---- | ------------------------------------------------------------------------------ |
-| 1-2  | Secure API access and scraping setup (Pinnacle, DK, FD, ProphetX, Sporttrade). |
-| 3-4  | Implement backend odds aggregation and value detection logic.                  |
-| 5    | Develop MVP frontend (dashboard, odds search, educational content).            |
-| 6-7  | Integrate affiliate tracking; final UI/UX refinements.                         |
-| 8    | Testing and internal beta launch; iterate based on user feedback.              |
+| Week | Milestone                                                              |
+| ---- | ---------------------------------------------------------------------- |
+| 1-2  | Secure The Odds API access and setup initial scraping (P2P liquidity). |
+| 3-4  | Implement backend odds aggregation and value detection logic.          |
+| 5    | Develop MVP frontend (dashboard, odds search, educational content).    |
+| 6-7  | Integrate affiliate tracking; final UI/UX refinements.                 |
+| 8    | Testing and internal beta launch; iterate based on user feedback.      |
 
 ## Legal Considerations
 
