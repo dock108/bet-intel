@@ -1,325 +1,247 @@
-# AI-Assisted Peer-to-Peer Betting Intelligence
+# Bet Intel - AI Betting Intelligence Platform
 
-**Created:** May 23, 2025
+**Date**: May 23, 2025  
+**Phase**: 2 - Frontend Scaffolding Complete
 
-## Description
+## Project Overview
 
-An innovative platform that leverages real-time sportsbook odds data from top market-makers (DraftKings, FanDuel, Pinnacle, Caesars) to empower users to identify and set advantageous "limit order-style" bets on emerging peer-to-peer (P2P) betting platforms like Sporttrade, ProphetX, and Novig. 
+Bet Intel is an AI-assisted peer-to-peer betting intelligence platform that identifies Expected Value (EV) opportunities across traditional sportsbooks and P2P exchanges. The platform uses advanced statistical models and real-time data polling to help users find profitable betting opportunities.
 
-The platform automates value identification, clearly communicates optimal betting strategies, educates users on the unique P2P betting model, and generates revenue through premium subscriptions and affiliate links.
+## Current Status
 
-## Key Features
+✅ **Completed in Phase 2:**
+- Modern React frontend scaffolded with Bootstrap UI framework
+- Multi-page routing implemented (Dashboard, SearchAI, Education, Disclaimers)
+- Backend FastAPI services operational with EV calculation endpoints
+- Real-time data polling from odds APIs
+- Dashboard displaying live EV opportunities
 
-- **Real-time Value Detection**: Compare sportsbook odds to P2P exchanges
-- **Limit Order-Style Betting**: Set target odds and get alerted when market conditions are favorable
-- **AI-Driven Analytics**: Advanced Bayesian methods and Monte Carlo simulations (Premium)
-- **Educational Platform**: Comprehensive P2P betting education for new users
-- **Historical Data Storage**: Capture opening and closing odds for analytics
-- **Multi-Platform Integration**: Support for multiple sportsbooks and P2P exchanges
+🚧 **Upcoming Features (Future Phases):**
+- AI-powered search and analysis tools
+- Bayesian probability models
+- Monte Carlo simulation capabilities
+- Advanced educational content
+- Comprehensive legal documentation
 
-## Product Tiers
+## Repository Structure
 
-### Free Version
-- Limited to one sportsbook and one P2P exchange
-- Basic odds search functionality
-- Limited educational content
-- Simple recommended odds for select events
+```
+bet-intel/
+├── backend/                    # FastAPI backend services
+│   ├── main.py                # Main API server with EV endpoints
+│   ├── requirements.txt       # Python dependencies
+│   └── ...
+├── frontend/                  # React frontend application
+│   ├── src/
+│   │   ├── components/        # Reusable React components
+│   │   │   ├── Navigation.js  # Main navigation header
+│   │   │   └── OpportunityCard.js # Betting opportunity display card
+│   │   ├── pages/            # Page components
+│   │   │   ├── Dashboard.js   # Main EV dashboard (active)
+│   │   │   ├── SearchAI.js    # AI search (placeholder)
+│   │   │   ├── Education.js   # Educational content (placeholder)
+│   │   │   └── Disclaimers.js # Legal disclaimers (placeholder)
+│   │   ├── App.js            # Main React app with routing
+│   │   ├── index.js          # React entry point
+│   │   └── index.css         # Bootstrap imports and custom styles
+│   ├── public/
+│   │   └── index.html        # HTML template with Bootstrap CDN
+│   └── package.json          # Node.js dependencies
+├── README.md                 # This file
+└── .gitignore               # Git ignore rules
+```
 
-### Premium Version
-- Access to multiple sportsbooks and P2P platforms
-- Advanced AI-driven formulas and ML integrations
-- Comprehensive Monte Carlo simulations and Bayesian odds adjustments
-- Real-time alerts and extensive educational resources
-- Full historical odds storage and detailed analytics
-
-## Quick Start
+## Setup Instructions
 
 ### Prerequisites
+- Python 3.8+
+- Node.js 16+
+- npm or yarn
 
-- Python 3.9+ (for backend)
-- Node.js 16+ and npm (for frontend)
-- Git
-- **The Odds API key** (get free tier at https://the-odds-api.com)
+### Backend Setup
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd bet-intel
-   ```
-
-2. **Backend Setup**
+1. **Install Python dependencies:**
    ```bash
    cd backend
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
-3. **Frontend Setup**
+2. **Start the FastAPI server:**
+   ```bash
+   python main.py
+   ```
+   
+   The API will be available at `http://localhost:8000`
+   - Health check: `http://localhost:8000/health`
+   - EV endpoint: `http://localhost:8000/api/future-games-with-ev`
+
+### Frontend Setup
+
+1. **Install Node.js dependencies:**
    ```bash
    cd frontend
    npm install
    ```
 
-4. **Environment Configuration**
+2. **Start the React development server:**
    ```bash
-   # Backend configuration
-   cd backend
-   cp .env.example .env
-   # Edit .env with your API credentials (especially ODDS_API_KEY)
-   
-   # Frontend configuration  
-   cd ../frontend
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-### Running Locally
-
-1. **Start the Backend**
-   ```bash
-   cd backend
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   python main.py
-   ```
-
-2. **Start the Odds Polling Service (Optional)**
-   ```bash
-   # In a separate terminal
-   cd backend
-   source venv/bin/activate
-   python odds_poller.py
-   ```
-
-3. **Start the Frontend**
-   ```bash
-   cd frontend
    npm start
    ```
+   
+   The frontend will be available at `http://localhost:3000`
 
-4. **Access the Application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
+### Full Application Access
 
-## Current Features (v0.1.0)
+Once both servers are running:
+- **Frontend**: http://localhost:3000 (React app with Bootstrap UI)
+- **Backend API**: http://localhost:8000 (FastAPI with EV calculations)
 
-### ✅ Real-Time Odds Polling
-- **The Odds API Integration**: Configured for MLB data with 3-minute intervals
-- **Comprehensive Data Storage**: Events, bookmakers, odds snapshots with full history
-- **Opening/Closing Odds Tracking**: Automatic detection and flagging for analytics
-- **Rate Limiting & Error Handling**: Robust API management with quota tracking
-- **Multiple Market Support**: Moneyline (h2h), spreads, and totals
+## Available Endpoints
 
-### ✅ Backend Infrastructure
-- **FastAPI Application**: RESTful API with automatic documentation
-- **SQLite Database**: Lightweight storage with SQLAlchemy ORM
-- **Configuration Management**: Environment-based settings with Pydantic
-- **Monitoring Endpoints**: API status, polling logs, and database statistics
+### Backend API
+- `GET /health` - Health check endpoint
+- `GET /api/future-games-with-ev` - Returns EV opportunities with detailed analysis
+  - Optional parameter: `?limit=10` to limit results
+  
+#### EV Data Structure
+The `/api/future-games-with-ev` endpoint returns comprehensive betting data:
 
-### 🔧 Testing & Development
-- **Manual Polling Trigger**: `POST /api/poll-odds` for testing
-- **Database Inspection**: View events, logs, and statistics via API
-- **Comprehensive Logging**: Configurable log levels for debugging
-- **Error Tracking**: Full error capture and monitoring
-
-### 📊 Data Features
-- **Historical Preservation**: Complete odds movement tracking
-- **Multi-Bookmaker Support**: US sportsbooks (DraftKings, FanDuel, Caesars, etc.)
-- **Market Flexibility**: Configurable sports, regions, and bet types
-- **Performance Monitoring**: Response times and success rates
-
-## API Examples
-
-```bash
-# Check system health
-curl http://localhost:8000/health
-
-# View recent MLB games
-curl "http://localhost:8000/api/events?limit=5"
-
-# Get polling statistics
-curl http://localhost:8000/api/stats
-
-# Trigger manual odds collection
-curl -X POST http://localhost:8000/api/poll-odds
-
-# View polling history
-curl "http://localhost:8000/api/polling-logs?limit=10"
+```json
+{
+  "total": 10,
+  "methodology": {
+    "calculation_method": "7-Step No-Vig",
+    "core_bookmakers": {...},
+    "explanation": "Advanced statistical methodology description"
+  },
+  "events": [
+    {
+      "home_team": "Team A",
+      "away_team": "Team B", 
+      "sport": "americanfootball_nfl",
+      "commence_time": "2025-05-23T19:00:00Z",
+      "summary": {
+        "best_available_ev": 3.45,
+        "positive_ev_count": 8
+      },
+      "bookmaker_analysis": {
+        "bookmaker_key": {
+          "bookmaker": {
+            "title": "DraftKings",
+            "is_p2p": false
+          },
+          "outcomes": {
+            "h2h": [
+              {
+                "offered_odds": -110,
+                "ev_percentage": 2.34,
+                "fair_odds": -105
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
 ```
 
-## Development Status
+### Frontend Pages
+- `/` or `/dashboard` - Live EV Dashboard (fetches real data)
+- `/search-ai` - AI Search & Analysis (placeholder)
+- `/education` - Education Center (placeholder)
+- `/disclaimers` - Legal Disclaimers (placeholder)
 
-### Current Implementation (May 23, 2025)
-- ✅ Repository setup and project structure
-- ✅ The Odds API integration and polling system (MLB focus)
-- ✅ Database models and data storage
-- ✅ Basic FastAPI backend with monitoring endpoints
-- ✅ Opening and closing odds tracking
-- ✅ Comprehensive error handling and logging
+## Frontend Features
 
-### Next Steps (Week 1-2)
-- [ ] ProphetX API integration for P2P market data
-- [ ] Sporttrade API integration
-- [ ] Basic value detection engine
-- [ ] React frontend dashboard
+### Dashboard Page
+The main Dashboard (`/dashboard`) provides a comprehensive view of real-time EV opportunities:
 
-### Upcoming (Week 3-4)
-- [ ] Odds aggregation and comparison logic
-- [ ] User interface for odds display
-- [ ] Real-time notifications system
-- [ ] Educational content integration
+#### Enhanced Summary Bar
+- **Total Opportunities**: Live count of available betting opportunities
+- **Best EV Available**: Highest expected value percentage currently available
+- **Next Refresh Countdown**: Real-time countdown timer (3-minute intervals)
+- **Active Sportsbooks**: Number of connected traditional sportsbooks
+- **P2P Exchanges**: Number of peer-to-peer exchanges monitored
+- **EV Method**: Calculation methodology (7-Step No-Vig)
 
-## Project Structure
+#### OpportunityCard Component
+Each betting opportunity is displayed using the reusable `OpportunityCard` component featuring:
 
-```
-bet-intel/
-├── backend/          # Python FastAPI backend
-├── frontend/         # React frontend
-├── docs/            # Documentation
-├── tests/           # Test files
-├── checklist.md     # Development checklist
-├── prd.md          # Product Requirements Document
-└── README.md       # This file
-```
+**EV Indicators:**
+- 🔥 **HOT**: EV > 2% (High-value opportunities)
+- ✅ **SAFE**: EV > 0% (Positive expected value)
+- ⚠️ **CAUTION**: EV > -2% (Near break-even)
+- ❌ **AVOID**: EV < -2% (Negative expected value)
 
-## Development
+**Matchup Details:**
+- Team names and sport classification
+- Event start time and date
+- Best available EV percentage and dollar value
+- Positive EV opportunity count
 
-### Backend (Python/FastAPI)
-- API endpoints for odds aggregation
-- Real-time data processing
-- AI/ML algorithms for value detection
-- Database management
+**Recommended Opportunities:**
+- Best betting line identification
+- Recommended stake size (2-5% of bankroll)
+- Bookmaker/exchange source
 
-### Frontend (React)
-- User dashboard and interface
-- Real-time odds display
-- Educational content
-- Responsive mobile design
+**Detailed Analysis:**
+- Up to 3 top bookmakers with odds comparison
+- P2P exchange identification with special badges
+- Individual outcome EV percentages
+- Expandable view for additional bookmakers
 
-## API Integrations
+### Real-Time Features
+- **Auto-refresh**: Data updates every 3 minutes automatically
+- **Live countdown**: Visual timer showing next refresh
+- **Loading states**: Smooth loading indicators during data fetching
+- **Error handling**: Graceful error messages with retry functionality
+- **Responsive design**: Optimized for desktop, tablet, and mobile devices
 
-- **Pinnacle API**: Official odds data
-- **ProphetX API**: P2P market data
-- **Sporttrade API**: P2P trading data
-- **DraftKings/FanDuel**: Scraping or aggregator APIs
-- **OddsAPI**: Backup data source
+## Technology Stack
 
-## Usage
+### Backend
+- **FastAPI** - High-performance Python web framework
+- **Python 3.8+** - Core language
+- **Odds API Integration** - Real-time sports betting data
+- **7-Step No-Vig EV Calculation** - Proprietary methodology
 
-*[Coming Soon - Detailed usage instructions will be added as features are implemented]*
+### Frontend
+- **React 18** - Modern frontend framework
+- **React Router** - Client-side routing
+- **Bootstrap 5** - Responsive UI framework
+- **Font Awesome** - Icons
+- **Axios** - HTTP client for API requests
 
-## Features
+## Development Notes
 
-*[Coming Soon - Comprehensive feature documentation will be added during development]*
+### Current Implementation
+- Dashboard successfully fetches and displays live EV data from the backend
+- Responsive design works across desktop and mobile devices
+- Auto-refresh functionality updates data every 3 minutes
+- Error handling and loading states implemented
 
-## Deployment
+### Methodology
+The platform uses a **7-Step No-Vig methodology** for EV calculations across 6+ core bookmakers, providing accurate expected value assessments for both traditional sportsbooks and P2P exchanges.
 
-*[Coming Soon - Deployment instructions for Vercel and production environments]*
+## Future Development
+
+The next phases will focus on:
+1. **AI Integration** - Natural language queries and advanced filtering
+2. **Bayesian Models** - Advanced probability calculations
+3. **Monte Carlo Simulations** - Risk assessment and scenario modeling
+4. **Educational Content** - Comprehensive betting strategy resources
+5. **Legal Framework** - Complete terms of service and compliance documentation
 
 ## Contributing
 
-*[Coming Soon - Contribution guidelines and development workflow]*
-
-## Legal Considerations
-
-- No automated bet placement (user-initiated only)
-- Compliance with data sourcing terms of service
-- Responsible gambling practices
+This is currently a private development project. Future phases will include contribution guidelines and open-source considerations.
 
 ## License
 
-*[License information to be added]*
-
-## Support
-
-*[Support information to be added]*
-
-### 📈 **Current Data Coverage**:
-- **Sport**: MLB (baseball_mlb) - active baseball season
-- **Markets**: Moneyline, Spreads, Totals  
-- **Bookmakers**: US sportsbooks from The Odds API
-- **Frequency**: Every 3 minutes (configurable)
-- **Storage**: Complete historical odds snapshots
+Proprietary - All rights reserved.
 
 ---
 
-**Note**: This project is currently in active development. Check the `checklist.md` file for current progress and upcoming milestones.
-
-## Documentation
-
-*   [Odds Polling System](./docs/odds_polling.md)
-*   [Odds Aggregation & Discrepancy Detection](./docs/odds_aggregation_discrepancy.md)
-*   [Odds Conversion (American Odds to Implied Probability)](./docs/odds_conversion.md)
-*   [Vig Removal & Fair Odds Calculation](./docs/vig_removal.md)
-*   [Weighted Fair Odds Calculation (Pinnacle/DraftKings/FanDuel)](./docs/fair_odds_weighted.md)
-*   [Multiple EV Calculations (Standard, No-Vig, Weighted Fair Odds)](./docs/ev_calculations.md)
-*   [API Endpoints (EV Opportunities)](./docs/api_endpoints.md)
-
-## Getting Started
-
-(To be expanded with setup and run instructions)
-
-### Prerequisites
-
-*   Python 3.9+
-*   Pip
-
-### Backend Setup
-
-1.  Navigate to the `backend` directory:
-    ```bash
-    cd backend
-    ```
-2.  Create a virtual environment (optional but recommended):
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
-3.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4.  Copy the example environment file and fill in your details:
-    ```bash
-    cp .env.example .env
-    ```
-    *   You will need an API key from [The Odds API](https://the-odds-api.com/).
-5.  Initialize the database:
-    *   The database (`bet_intel.db`) is created automatically if it doesn't exist when the application or poller starts.
-    *   You can also initialize it manually by running `python -c "from database import initialize_database; initialize_database()"` from the `backend` directory.
-
-### Running the Backend
-
-*   **To start the FastAPI server (for API access and manual polling tests)**:
-    ```bash
-    python main.py
-    ```
-    The API will be available at `http://localhost:8000` and documentation at `http://localhost:8000/docs`.
-
-*   **To start the continuous odds poller service**:
-    ```bash
-    python odds_poller.py
-    ```
-    This will poll for odds at the interval defined in your `.env` file (default is 3 minutes).
-
-### Frontend Setup
-
-(Placeholder - to be implemented)
-
-## Development Tasks & Checklist
-
-Refer to [checklist.md](./checklist.md) for ongoing tasks and progress.
-
-## Technologies
-
-*   **Backend**: Python, FastAPI, SQLAlchemy, Pydantic, HTTPretty (for testing)
-*   **Frontend**: (To be decided - likely React or Vue.js)
-*   **Database**: SQLite (initially)
-*   **Odds Data**: The Odds API
-
-## Contributing
-
-(To be defined) 
+**Last Updated**: May 23, 2025  
+**Current Phase**: 2 Complete - Ready for Phase 3 AI Integration 

@@ -50,6 +50,7 @@ coverage.xml
 *.log
 local_settings.py
 db.sqlite3
+db.sqlite3-journal
 
 # Flask stuff:
 instance/
@@ -76,6 +77,7 @@ ipython_config.py
 
 # celery beat schedule file
 celerybeat-schedule
+celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
@@ -199,6 +201,7 @@ temp/
 
 # production
 /build
+/frontend/build
 
 # misc
 .DS_Store
@@ -291,4 +294,40 @@ deployment/
 
 # Performance and debugging
 .prof
-heap-*.json 
+heap-*.json
+
+# React/Frontend specific additions
+# Bootstrap config files (if using local builds)
+tailwind.config.js
+postcss.config.js
+
+# ESLint cache
+.eslintcache
+
+# React development server cache
+.cache/
+
+# Hot reload temp files
+*.hot-update.js
+*.hot-update.json
+
+# Static file build outputs
+static/css/
+static/js/
+static/media/
+
+# Service worker cache
+sw.js
+sw.js.map
+workbox-*.js
+
+# pdm
+#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+#pdm.lock
+#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+#   in version control.
+#   https://pdm.fming.dev/#use-with-ide
+.pdm.toml
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+__pypackages__/ 
