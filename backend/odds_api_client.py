@@ -232,14 +232,14 @@ def get_odds_client() -> OddsAPIClient:
 # Example usage and testing
 if __name__ == "__main__":
     # Configure logging for testing
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
     
     try:
         client = get_odds_client()
         
         # Test getting sports
         sports = client.get_sports()
-        print(f"Available sports: {len(sports)}")
+        logger.info(f"Available sports: {len(sports)}")
         
         # Test getting MLB odds
         mlb_odds = client.get_odds(
@@ -248,10 +248,12 @@ if __name__ == "__main__":
             markets="h2h,spreads,totals",
             odds_format="american"
         )
-        print(f"MLB events with odds: {len(mlb_odds)}")
+        logger.info(f"MLB events with odds: {len(mlb_odds)}")
         
         if mlb_odds:
-            print(f"Sample event: {mlb_odds[0]['home_team']} vs {mlb_odds[0]['away_team']}")
+            logger.info(
+                f"Sample event: {mlb_odds[0]['home_team']} vs {mlb_odds[0]['away_team']}"
+            )
         
     except Exception as e:
-        print(f"Error: {e}") 
+        logger.error(f"Error: {e}")

@@ -277,7 +277,7 @@ def notify_opportunity(opportunity: PotentialOpportunity):
 if __name__ == '__main__':
     # Example usage (for testing purposes)
     # This would require a mock DB setup or connection to a live one
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
     logger.info("Odds Analyzer module loaded.")
     # Mock data or test DB calls would go here
     # example_event_id = "some_event_external_id"
