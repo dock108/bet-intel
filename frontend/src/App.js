@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
+import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
 import SearchAI from './pages/SearchAI';
 import Education from './pages/Education';
@@ -13,7 +14,7 @@ function App() {
         <Navigation />
         <main>
           <Routes>
-            <Route path="/" element={<Dashboard />} />
+            <Route path="/" element={<Landing />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/search-ai" element={<SearchAI />} />
             <Route path="/education" element={<Education />} />

@@ -21,12 +21,12 @@ code {
 .card-hover {
   transition: all 0.3s ease;
   border: 1px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-  border-color: #0d6efd;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 .data-fresh {
@@ -111,6 +111,81 @@ code {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Compact spacing */
+.card-body.py-3 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+.card-body.px-3 {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+/* Tiny badge for P2P indicators */
+.badge.tiny {
+  font-size: 0.6rem !important;
+  padding: 0.15rem 0.4rem;
+}
+
+/* Improved button styles */
+.btn-sm {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.btn-link.btn-sm {
+  font-size: 0.8rem;
+}
+
+/* Color scheme enhancements */
+.border-success {
+  border-color: #28a745 !important;
+  border-width: 2px !important;
+}
+
+.border-primary {
+  border-color: #007bff !important;
+  border-width: 2px !important;
+}
+
+.border-warning {
+  border-color: #ffc107 !important;
+  border-width: 2px !important;
+}
+
+.border-secondary {
+  border-color: #6c757d !important;
+  border-width: 1px !important;
+}
+
+/* Enhanced EV indicators */
+.text-success {
+  color: #28a745 !important;
+  font-weight: 600;
+}
+
+.text-primary {
+  color: #007bff !important;
+  font-weight: 600;
+}
+
+.text-warning {
+  color: #856404 !important;
+  font-weight: 600;
+}
+
+/* Compact alert styling */
+.alert.py-1 {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+
+.alert.px-2 {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .display-5 {
@@ -123,6 +198,11 @@ code {
   
   .card-hover:hover {
     transform: none;
+  }
+  
+  .card-body.py-3 {
+    padding-top: 0.75rem !important;
+    padding-bottom: 0.75rem !important;
   }
 }
 

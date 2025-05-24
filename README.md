@@ -147,12 +147,41 @@ The `/api/future-games-with-ev` endpoint returns comprehensive betting data:
 ```
 
 ### Frontend Pages
-- `/` or `/dashboard` - Live EV Dashboard (fetches real data)
+- `/` - Landing Page (conversion-focused introduction to Bet Intel)
+- `/dashboard` - Live EV Dashboard (fetches real data)
 - `/search-ai` - AI Search & Analysis (placeholder)
-- `/education` - Education Center (placeholder)
-- `/disclaimers` - Legal Disclaimers (placeholder)
+- `/education` - Education Center (comprehensive P2P betting guide)
+- `/disclaimers` - Legal Disclaimers (comprehensive legal compliance)
 
 ## Frontend Features
+
+### Landing Page (`/`)
+**Purpose**: Conversion-focused landing page that introduces Bet Intel, showcases the value proposition, and guides users to explore the free dashboard and educational content.
+
+**Content Sections**:
+1. **Hero Section** - Compelling headline ("💡 Smarter Sports Betting Starts Here"), value proposition, and clear CTAs to dashboard and education
+2. **What is Bet Intel?** - Four-card explanation of core platform features: real-time odds analysis, sharp line detection, P2P strategy optimization, and information-only service
+3. **Free Features Available Now** - Three detailed feature cards highlighting Live EV Dashboard, Odds Comparisons, and Education Center with "FREE" badges and direct access buttons
+4. **Premium Features Coming Soon** - Four preview cards for upcoming tools: AI Betting Assistant, Bet Alerts, Portfolio Tracker, and Advanced Analytics with "COMING SOON" badges
+5. **Why P2P Betting CTA Section** - Explains "eBay for sports bets" concept, asymmetric risk benefits, and drives traffic to Education Center
+6. **Final CTA Section** - Strong conversion section with social proof numbers and prominent dashboard access
+7. **Footer** - Navigation links and responsible gambling disclaimer
+
+**Conversion Features**:
+- **Clear value proposition**: "Real-time +EV bets. Peer-to-peer odds intel. No fluff."
+- **Multiple CTAs**: Primary focus on "Try the Free Dashboard" with secondary education links
+- **Live dashboard preview**: Interactive card showing sample metrics (47 +EV bets, +4.2% best EV, 12 P2P opportunities)
+- **Feature badges**: "FREE" for current features, "COMING SOON" for premium tools
+- **Social proof elements**: "Join hundreds of sharp bettors" and "100% Free to Use"
+- **Mobile-responsive design**: Optimized for all devices with Bootstrap framework
+
+**Design Features**:
+- **Hero section**: Full-width primary background with logo, headline, and preview card
+- **Section variety**: Alternating backgrounds (white, light gray, primary, dark) for visual interest
+- **Card-based layouts**: Consistent Bootstrap cards with headers, feature lists, and action buttons
+- **Color-coded sections**: Green for free features, warning/secondary for premium, primary for CTAs
+- **Professional branding**: BetIntel logo integration and consistent color scheme throughout
+- **Footer disclaimer**: Soft responsible gambling message and platform clarification
 
 ### Dashboard Page
 The main Dashboard (`/dashboard`) provides a comprehensive view of real-time EV opportunities:
@@ -165,46 +194,93 @@ The main Dashboard (`/dashboard`) provides a comprehensive view of real-time EV 
 - **P2P Exchanges**: Number of peer-to-peer exchanges monitored
 - **EV Method**: Calculation methodology (7-Step No-Vig)
 
-#### OpportunityCard Component
-Each betting opportunity is displayed using the reusable `OpportunityCard` component featuring:
+### Education Page (`/education`)
+**Purpose**: Comprehensive educational resource that teaches users P2P betting fundamentals, expected value concepts, and how to effectively use Bet Intel's recommendations.
 
-**Enhanced Design & Functionality:**
+**Content Sections**:
+1. **What is P2P Betting?** - Explains peer-to-peer betting as "eBay for sports bets", key differences from traditional sportsbooks, and exchange commission structure
+2. **Understanding Odds & Expected Value** - Covers American odds, implied probability, vig calculation, and EV formula with practical coin flip example
+3. **How Bet Intel Calculates +EV** - Interactive 7-step methodology breakdown using Bootstrap accordion, sample calculations, and mathematical transparency
+4. **What We're Offering** - Value proposition section explaining limit order strategy, analogies to eBay/stock trading, and reasons why others accept your odds
+5. **How to Post a Bet** - Step-by-step guide from finding recommendations to posting on P2P exchanges, with supported platform buttons and sample bet example
+
+**Design Features**:
+- **Anchor-linkable sections** (`#p2p`, `#ev`, `#calculation`, `#offering`, `#howto`) for easy navigation
+- **Visual learning aids**: Interactive accordions, comparison tables, flow diagrams, and highlighted formulas
+- **Mobile-responsive Bootstrap layout** with cards, alerts, and progress indicators
+- **BetIntel branding** with logo integration and consistent color scheme
+- **Call-to-action section** linking to dashboard and legal disclaimers
+
+### Disclaimers Page (`/disclaimers`)
+**Purpose**: Comprehensive legal compliance page that protects Bet Intel from liability while educating users about their responsibilities and the risks associated with sports betting.
+
+**Content Sections**:
+1. **Nature of Service** - Clearly defines Bet Intel as informational analytics platform only, not a sportsbook or betting operator
+2. **No Warranties or Guarantees** - Legal disclaimers about profit guarantees, accuracy limitations, and uncertainty inherent in sports outcomes
+3. **Risk of Loss & Responsible Gambling** - Critical risk warnings, responsible gambling guidelines, and problem gambling resources (1-800-GAMBLER, ncpgambling.org)
+4. **Age and Jurisdiction Requirements** - Legal age requirements (18+/21+), jurisdiction compliance responsibilities, and entertainment-only usage for restricted areas
+5. **Affiliate Disclosure** - Transparency about affiliate relationships, objectivity commitments, and user choice preservation
+6. **Methodology Transparency** - Links to Education Center for mathematical methodology, analysis scope, and calculation components
+7. **Limitation of Liability** - Legal protection clauses, user responsibility acknowledgment, and service limitations
+8. **Changes to Disclaimers** - Update policy and user notification procedures
+
+**Legal Compliance Features**:
+- **Professional tone** with clear, accessible language for legal requirements
+- **Risk awareness emphasis** highlighting that betting should be entertainment, not investment
+- **Responsible gambling resources** prominently featured with direct access buttons
+- **User responsibility clarity** ensuring users understand their legal and financial responsibilities
+- **Platform limitations** clearly distinguishing Bet Intel from actual betting operators
+- **Affiliate transparency** maintaining trust while disclosing commercial relationships
+- **Effective date tracking** for legal compliance and user notification
+- **Cross-reference integration** linking to Education Center for methodology transparency
+
+**Design Features**:
+- **Bootstrap card layout** with color-coded sections for easy navigation
+- **Alert boxes** for critical warnings and important information
+- **Professional branding** with BetIntel logo integration and consistent styling
+- **Mobile-responsive design** ensuring accessibility across all devices
+- **Clear navigation** with prominent links back to Dashboard and Education Center
+- **Contact accessibility** providing clear pathways for user questions and clarifications
+
+#### OpportunityCard Component
+Each betting opportunity is displayed using the reusable `OpportunityCard` component featuring a **Compact Design with Expandable Details**:
+
+**Compact Card Layout (New Design):**
+- **Essential Info First**: Displays only critical information by default for quick scanning
+- **Smart Color Coding**: Cards have colored borders based on EV quality:
+  - Green: Strong positive EV (>2%)
+  - Blue: Positive EV (0-2%)
+  - Yellow: Caution range (-2% to 0%)
+  - Grey: Negative EV (<-2%)
+- **Expandable Details**: Click "Details ⬇️" to reveal comprehensive analysis
+- **Compact Spacing**: Reduced padding and margins for more cards per view
+
+**Default Visible Information:**
+- **Team Matchup**: Clear team names with sport icons (⚾ for baseball, 🏈 for football)
+- **Event Details**: Sport, date, and time in compact format
+- **Recommended Bets**: Up to 2 best opportunities with odds and EV percentages
+- **Quick CTA**: Single "Place Bet" button for immediate action
+- **EV Indicators**: Visual badges (🔥 HOT, ✅ SAFE, ⚠️ CAUTION, ❌ AVOID)
+
+**Expandable Details Section:**
+- **Summary Statistics**: Best EV, opportunity count, and bookmaker count
+- **Detailed Bookmaker Analysis**: Complete list with EV-based sorting
+- **P2P Fee Transparency**: Shows original odds vs fee-adjusted odds
+- **Fee Impact Warnings**: Alerts when P2P opportunities become negative after fees
+- **Visual EV Indicators**: ✅ for positive EV, ❌ for negative EV (after fees for P2P)
+
+**Enhanced Design Features:**
 - **Descriptive Outcome Labels**: Clear labels like "Red Sox Win", "Orioles Win" instead of generic codes
 - **Smart EV Sorting**: Bookmakers automatically sorted by Expected Value (highest to lowest)
-- **Accurate Best Line Logic**: Shows actual bookmaker with highest positive EV, or "No Positive EV Available"
-- **Sport Icons**: Visual indicators (⚾ for baseball, 🏈 for football) for quick identification
-
-**EV Indicators:**
-- 🔥 **HOT**: EV > 2% (High-value opportunities)
-- ✅ **SAFE**: EV > 0% (Positive expected value)
-- ⚠️ **CAUTION**: EV > -2% (Near break-even)
-- ❌ **AVOID**: EV < -2% (Negative expected value)
-
-**Recommended P2P Bet Section:**
-- **Multiple Outcome Display**: Shows all profitable outcomes (A, B, C) when available
-- **Calculated P2P Odds**: Automatically applies 2% commission + 2.5% EV safety buffer
-- **Clear Outcome Descriptions**: Shows exactly which team/outcome to bet on for each opportunity
-- **Target EV**: Aims for 2.5% positive EV after all fees and buffers (between 2-3% range)
-- **Dual Information**: For positive EV bets, shows both original odds/EV and fee-adjusted odds/EV
-- **Adjusted EV Display**: Expected value after all fees and buffers applied
-- **Affiliate Integration Ready**: Placeholder buttons for "Place Bets on [P2P Exchange Placeholder]"
-- **Alternative Options**: Secondary button for additional P2P platforms
-
-**Sorted Bookmaker Analysis:**
-- **EV-Based Sorting**: All bookmakers ranked by their best available EV (highest first)
-- **P2P Fee Transparency**: P2P exchanges show real EV after 2% fees are applied
-- **Dual Display for P2P**: Shows both original odds and fee-adjusted odds
-- **Fee Impact Warnings**: Clear alerts when P2P opportunities become negative EV after fees
-- **Visual EV Indicators**: ✅ for positive EV bookmakers, ❌ for negative EV (after fees for P2P)
-- **Descriptive Bet Labels**: Instead of "outcome_A", shows "Red Sox Win: +120"
-- **EV Badges**: Color-coded badges showing each bookmaker's best EV percentage
 - **P2P Identification**: Special badges and color coding for peer-to-peer exchanges
-- **Expandable View**: "Show X more bookmakers" for comprehensive analysis
+- **Interactive Elements**: Smooth expand/collapse transitions with arrow indicators
+- **Responsive Design**: Optimized spacing for both desktop and mobile devices
 
-**Best Line Summary:**
-- **Accurate Best Line**: Shows bookmaker with actual highest positive EV
-- **No False Positives**: Clearly states "No Positive EV Available" when applicable
-- **Quick Metrics**: Best EV percentage and positive opportunity count at a glance
+**P2P Calculation Display:**
+- **Dual Information**: Shows both original odds/EV and fee-adjusted values
+- **Target EV**: 2.5% positive EV after all fees and buffers (optimal 2-3% range)
+- **Multiple Outcomes**: Displays all profitable outcomes when available
+- **Clear Fee Impact**: Visual warnings when fees make opportunities unprofitable
 
 ### Real-Time Features
 - **Auto-refresh**: Data updates every 3 minutes automatically

@@ -5,14 +5,11 @@ const Navigation = () => {
   const location = useLocation();
 
   const isActive = (path) => {
-    if (path === '/' || path === '/dashboard') {
-      return location.pathname === '/' || location.pathname === '/dashboard';
-    }
     return location.pathname === path;
   };
 
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: 'fas fa-chart-bar' },
+    { path: '/dashboard', label: 'Dashboard', icon: 'fas fa-chart-bar' },
     { path: '/search-ai', label: 'Search AI', icon: 'fas fa-robot' },
     { path: '/education', label: 'Education', icon: 'fas fa-book' },
     { path: '/disclaimers', label: 'Disclaimers', icon: 'fas fa-balance-scale' }

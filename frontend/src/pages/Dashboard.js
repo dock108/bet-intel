@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import OpportunityCard from '../components/OpportunityCard';
+import betIntelLogo from '../assets/images/betintel-logo.png';
 
 const Dashboard = () => {
   const [evData, setEvData] = useState(null);
@@ -123,107 +124,98 @@ const Dashboard = () => {
   return (
     <div className="container-fluid py-4">
       {/* Header */}
-      <div className="row mb-4">
-        <div className="col-lg-8">
-          <h1 className="display-5 fw-bold text-dark">EV Dashboard</h1>
-          <p className="lead text-muted">
-            Real-time Expected Value opportunities across sportsbooks and P2P exchanges
-          </p>
+      <div className="row mb-4 align-items-center">
+        <div className="col-lg-6">
+          <div className="d-flex align-items-center">
+            <img 
+              src={betIntelLogo} 
+              alt="BetIntel Logo" 
+              className="me-3"
+              style={{ height: '80px', width: 'auto' }}
+            />
+            <div>
+              <h1 className="display-5 fw-bold text-dark mb-1">EV Dashboard</h1>
+              <p className="lead text-muted mb-0">
+                Real-time Expected Value opportunities across sportsbooks and P2P exchanges
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="col-lg-4 text-lg-end">
-          <button
-            onClick={fetchEVData}
-            disabled={loading}
-            className="btn btn-primary"
-          >
-            <i className={`fas fa-sync ${loading ? 'spin' : ''} me-2`}></i>
-            {loading ? 'Refreshing...' : 'Refresh Data'}
-          </button>
-          {lastUpdated && (
-            <small className="d-block text-muted mt-2">
-              Last updated: {lastUpdated.toLocaleTimeString()}
-            </small>
-          )}
+        <div className="col-lg-6">
+          <div className="d-flex align-items-center justify-content-lg-end gap-4 flex-wrap">
+            {/* Best EV Available */}
+            {evData && (
+              <div className="text-center">
+                <div className="h4 fw-bold text-success mb-0">
+                  {getBestEV() >= 0 ? '+' : ''}{getBestEV().toFixed(1)}%
+                </div>
+                <small className="text-muted">Best EV Available</small>
+              </div>
+            )}
+            
+            {/* Next Refresh */}
+            {evData && (
+              <div className="text-center">
+                <div className="h4 fw-bold text-info mb-0">
+                  <i className="fas fa-clock me-1"></i>
+                  {formatCountdown(nextRefresh)}
+                </div>
+                <small className="text-muted">Next Refresh</small>
+              </div>
+            )}
+            
+            {/* Refresh Button */}
+            <div className="text-center">
+              <button
+                onClick={fetchEVData}
+                disabled={loading}
+                className="btn btn-primary"
+              >
+                <i className={`fas fa-sync ${loading ? 'spin' : ''} me-2`}></i>
+                {loading ? 'Refreshing...' : 'Refresh Data'}
+              </button>
+              {lastUpdated && (
+                <small className="d-block text-muted mt-1">
+                  Last updated: {lastUpdated.toLocaleTimeString()}
+                </small>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Enhanced Summary Bar */}
-      {evData && (
-        <div className="card mb-4 border-primary">
-          <div className="card-header bg-primary text-white">
-            <h5 className="card-title mb-0">
-              <i className="fas fa-tachometer-alt me-2"></i>
-              Live Market Summary
-            </h5>
-          </div>
-          <div className="card-body">
-            <div className="row text-center">
-              <div className="col-lg-2 col-md-4 col-sm-6 mb-3">
-                <h3 className="text-primary fw-bold">{evData.total || 0}</h3>
-                <small className="text-muted">Total Opportunities</small>
-              </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 mb-3">
-                <h3 className="text-success fw-bold">
-                  {getBestEV().toFixed(2)}%
-                </h3>
-                <small className="text-muted">Best EV Available</small>
-              </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 mb-3">
-                <h3 className="text-info fw-bold">
-                  <i className="fas fa-clock me-1"></i>
-                  {formatCountdown(nextRefresh)}
-                </h3>
-                <small className="text-muted">Next Refresh</small>
-              </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 mb-3">
-                <h3 className="text-warning fw-bold">
-                  {evData.methodology?.core_bookmakers ? Object.keys(evData.methodology.core_bookmakers).length : 6}
-                </h3>
-                <small className="text-muted">Active Sportsbooks</small>
-              </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 mb-3">
-                <h3 className="text-p2p fw-bold">
-                  2
-                </h3>
-                <small className="text-muted">P2P Exchanges</small>
-              </div>
-              <div className="col-lg-2 col-md-4 col-sm-6 mb-3">
-                <h3 className="text-secondary fw-bold">
-                  {evData.methodology?.calculation_method?.split(' ')[0] || '7-Step'}
-                </h3>
-                <small className="text-muted">EV Method</small>
-              </div>
-            </div>
-            
-            {/* Live Status Indicator */}
-            <div className="text-center mt-3">
-              <span className="badge bg-success fs-6 pulse">
-                <i className="fas fa-circle me-1"></i>
-                LIVE DATA
-              </span>
-              <small className="text-muted ms-3">
-                Markets updating every 3 minutes
-              </small>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* EV Opportunities Grid using OpportunityCard */}
       {evData?.events && evData.events.length > 0 ? (
-        <div className="row g-4">
-          {evData.events.map((event, index) => (
-            <div key={index} className="col-lg-6 col-xl-4">
-              <OpportunityCard
-                event={event}
-                formatOdds={formatOdds}
-                formatTime={formatTime}
-                getEVClass={getEVClass}
-                getEVIndicator={getEVIndicator}
-              />
+        <>
+          {/* P2P Calculation Explanation */}
+          <div className="alert alert-warning border-warning bg-warning bg-opacity-10 mb-4" role="alert">
+            <div className="d-flex align-items-center">
+              <i className="fas fa-calculator me-3 text-warning"></i>
+              <div>
+                <h6 className="alert-heading mb-1 text-dark fw-bold">P2P Calculation Method</h6>
+                <p className="mb-0 text-dark">
+                  P2P target based on Pinnacle no-vig + 2% fee + 2.5% buffer
+                </p>
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
+          
+          <div className="row g-4">
+            {evData.events
+              .sort((a, b) => (b.summary?.best_available_ev || -100) - (a.summary?.best_available_ev || -100))
+              .map((event, index) => (
+              <div key={index} className="col-lg-6 col-xl-4">
+                <OpportunityCard
+                  event={event}
+                  formatOdds={formatOdds}
+                  formatTime={formatTime}
+                  getEVClass={getEVClass}
+                  getEVIndicator={getEVIndicator}
+                />
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         <div className="text-center py-5">
           <div className="display-1 mb-4">📊</div>
