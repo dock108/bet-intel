@@ -22,10 +22,9 @@ Retrieve events with comprehensive Expected Value calculations across all three 
 
 ### Description
 
-This endpoint returns active sports betting events along with their EV calculations using three distinct methods:
+This endpoint returns active sports betting events along with their EV calculations using two methods:
 - **Standard EV**: Basic calculation using raw bookmaker odds (includes vig)
 - **No-Vig EV**: Calculation using vig-removed fair odds
-- **Weighted Fair Odds EV**: Sophisticated calculation using weighted consensus from Pinnacle (50%), DraftKings (25%), and FanDuel (25%)
 
 ### Query Parameters
 
@@ -38,7 +37,7 @@ This endpoint returns active sports betting events along with their EV calculati
 | `market_key` | string | "h2h" | Market type filter | Default: moneyline |
 | `positive_ev_only` | boolean | false | Only return events with positive EV opportunities | Optional |
 | `min_ev_threshold` | float | null | Minimum EV threshold (e.g., 5.0 for $5+ EV) | Optional |
-| `ev_method` | string | "any" | EV method for threshold filtering | 'standard', 'no_vig', 'weighted_fair', 'any' |
+| `ev_method` | string | "any" | EV method for threshold filtering | 'standard', 'no_vig', 'any' |
 
 ### Example Requests
 
@@ -52,8 +51,6 @@ curl "http://localhost:8000/api/ev-opportunities?limit=10&offset=10"
 # Get only MLB games with positive EV
 curl "http://localhost:8000/api/ev-opportunities?sport_key=baseball_mlb&positive_ev_only=true"
 
-# High-value opportunities with specific EV threshold
-curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=10.0&ev_method=weighted_fair"
 
 # DraftKings opportunities with any EV method >= $5
 curl "http://localhost:8000/api/ev-opportunities?bookmaker_key=draftkings&min_ev_threshold=5.0&ev_method=any"
@@ -89,17 +86,12 @@ curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=
               "offered_odds": 120,
               "standard_ev": 21.0,
               "no_vig_ev": 18.5,
-              "weighted_fair_ev": 15.2,
               "standard_implied_probability": 0.4545,
               "no_vig_fair_probability": 0.4762,
-              "weighted_fair_probability": 0.4800,
               "no_vig_fair_odds": 110,
-              "weighted_fair_odds": 108,
               "vig_percentage": 0.0476,
-              "books_used_in_weighted": "pinnacle,draftkings,fanduel",
               "has_positive_standard_ev": true,
               "has_positive_no_vig_ev": true,
-              "has_positive_weighted_ev": true,
               "calculated_at": "2025-05-23T14:30:00"
             },
             {
@@ -108,10 +100,8 @@ curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=
               "offered_odds": -150,
               "standard_ev": -8.0,
               "no_vig_ev": -12.5,
-              "weighted_fair_ev": -15.8,
               "has_positive_standard_ev": false,
               "has_positive_no_vig_ev": false,
-              "has_positive_weighted_ev": false,
               "calculated_at": "2025-05-23T14:30:00"
             }
           ]
@@ -121,7 +111,6 @@ curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=
         "total_bookmakers": 1,
         "positive_standard_ev_count": 1,
         "positive_no_vig_ev_count": 1,
-        "positive_weighted_fair_ev_count": 1,
         "best_standard_ev": {
           "ev": 21.0,
           "bookmaker": "DraftKings",
@@ -134,13 +123,6 @@ curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=
           "outcome": "outcome_A",
           "odds": 120,
           "vig_percentage": 0.0476
-        },
-        "best_weighted_fair_ev": {
-          "ev": 15.2,
-          "bookmaker": "DraftKings",
-          "outcome": "outcome_A",
-          "odds": 120,
-          "books_used": "pinnacle,draftkings,fanduel"
         },
         "meets_threshold": true,
         "threshold_details": {
@@ -175,8 +157,7 @@ curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=
     "generated_at": "2025-05-23T14:35:00",
     "ev_methods": {
       "standard_ev": "Expected value using raw bookmaker odds (includes vig)",
-      "no_vig_ev": "Expected value using vig-removed fair odds",
-      "weighted_fair_ev": "Expected value using weighted consensus (Pinnacle 50%, DK 25%, FD 25%)"
+      "no_vig_ev": "Expected value using vig-removed fair odds"
     },
     "pagination_note": "Showing events 1-1 of 15 total events"
   }
@@ -203,7 +184,6 @@ curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=
 - `offered_odds`: American odds from bookmaker
 - `standard_ev`: Standard EV calculation result
 - `no_vig_ev`: No-vig EV calculation result
-- `weighted_fair_ev`: Weighted fair odds EV result
 - `*_probability`: Supporting probability calculations
 - `*_fair_odds`: Reference fair odds used
 - `has_positive_*_ev`: Boolean flags for positive EV detection
@@ -276,8 +256,6 @@ curl "http://localhost:8000/api/ev-opportunities?limit=20&offset=40"
 
 #### 5. EV Threshold Filtering
 ```bash
-# High-value opportunities: weighted fair EV >= $15
-curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=15.0&ev_method=weighted_fair"
 
 # Medium opportunities: any EV method >= $5
 curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=5.0&ev_method=any"
@@ -288,8 +266,6 @@ curl "http://localhost:8000/api/ev-opportunities?min_ev_threshold=3.0&ev_method=
 
 #### 6. Combined Filtering
 ```bash
-# Premium opportunities: MLB + DraftKings + weighted fair EV >= $10
-curl "http://localhost:8000/api/ev-opportunities?sport_key=baseball_mlb&bookmaker_key=draftkings&min_ev_threshold=10.0&ev_method=weighted_fair"
 
 # Safe bets: positive EV across all methods
 curl "http://localhost:8000/api/ev-opportunities?positive_ev_only=true&min_ev_threshold=1.0&ev_method=any"

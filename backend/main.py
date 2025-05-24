@@ -3,6 +3,9 @@ AI-Assisted Peer-to-Peer Betting Intelligence - Backend
 Main FastAPI application entry point
 """
 
+# Weighted fair odds logic has been phased out, but some fields remain for
+# backward compatibility. Unused sections are marked accordingly.
+
 from fastapi import FastAPI, HTTPException, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -171,14 +174,13 @@ async def get_ev_opportunities(
     positive_ev_only: bool = Query(default=False, description="Only return events with positive EV opportunities"),
     exclude_live_games: bool = Query(default=True, description="Exclude games that have already started"),
     min_ev_threshold: Optional[float] = Query(default=None, description="Minimum EV threshold (e.g., 5.0 for $5+ EV)"),
-    ev_method: str = Query(default="any", description="EV method for threshold: 'standard', 'no_vig', 'weighted_fair', or 'any'"),
+    ev_method: str = Query(default="any", description="EV method for threshold: 'standard', 'no_vig', or 'any'"),
     db: Session = Depends(get_db)
 ):
     """
     Get events with their Expected Value (EV) calculations across all three methods:
     - Standard EV (with vig)
     - No-Vig EV (vig-removed fair odds)
-    - Weighted Fair Odds EV (Pinnacle 50%, DraftKings 25%, FanDuel 25%)
     
     Returns structured data showing betting opportunities and value analysis with pagination support.
     
@@ -202,11 +204,6 @@ async def get_ev_opportunities(
     ```
     Returns first 5 MLB games with EV calculations.
     
-    ### High-Value Opportunities:
-    ```
-    GET /api/ev-opportunities?min_ev_threshold=10.0&ev_method=weighted_fair&positive_ev_only=true
-    ```
-    Returns events with weighted fair EV >= $10.
     
     ### Bookmaker-Specific Analysis:
     ```
@@ -222,7 +219,7 @@ async def get_ev_opportunities(
                     f"bookmaker={bookmaker_key}, min_ev={min_ev_threshold}, method={ev_method}")
         
         # Validate EV method parameter
-        valid_ev_methods = ['any', 'standard', 'no_vig', 'weighted_fair']
+        valid_ev_methods = ['any', 'standard', 'no_vig']
         if ev_method not in valid_ev_methods:
             raise HTTPException(
                 status_code=400, 
@@ -294,10 +291,8 @@ async def get_ev_opportunities(
                                 "total_bookmakers": 0,
                                 "positive_standard_ev_count": 0,
                                 "positive_no_vig_ev_count": 0,
-                                "positive_weighted_fair_ev_count": 0,
                                 "best_standard_ev": None,
                                 "best_no_vig_ev": None,
-                                "best_weighted_fair_ev": None,
                                 "meets_threshold": False
                             }
                         })
@@ -329,17 +324,12 @@ async def get_ev_opportunities(
                         "offered_odds": calc['offered_odds'],
                         "standard_ev": calc['standard_ev'],
                         "no_vig_ev": calc['no_vig_ev'],
-                        "weighted_fair_ev": calc['weighted_fair_ev'],
                         "standard_implied_probability": calc['standard_implied_probability'],
                         "no_vig_fair_probability": calc['no_vig_fair_probability'],
-                        "weighted_fair_probability": calc['weighted_fair_probability'],
                         "no_vig_fair_odds": calc['no_vig_fair_odds'],
-                        "weighted_fair_odds": calc['weighted_fair_odds'],
                         "vig_percentage": calc['vig_percentage'],
-                        "books_used_in_weighted": calc['books_used_in_weighted'],
                         "has_positive_standard_ev": calc['has_positive_standard_ev'],
                         "has_positive_no_vig_ev": calc['has_positive_no_vig_ev'],
-                        "has_positive_weighted_ev": calc['has_positive_weighted_ev'],
                         "calculated_at": calc['calculated_at'].isoformat() if calc['calculated_at'] else None
                     })
                 
@@ -362,8 +352,7 @@ async def get_ev_opportunities(
                 # Apply positive EV filter if requested
                 if positive_ev_only and (
                     summary['positive_standard_ev_count'] == 0 and
-                    summary['positive_no_vig_ev_count'] == 0 and
-                    summary['positive_weighted_fair_ev_count'] == 0
+                    summary['positive_no_vig_ev_count'] == 0
                 ):
                     continue
                 
@@ -418,8 +407,7 @@ async def get_ev_opportunities(
                 "generated_at": datetime.now().isoformat(),
                 "ev_methods": {
                     "standard_ev": "Expected value using raw bookmaker odds (includes vig)",
-                    "no_vig_ev": "Expected value using vig-removed fair odds",
-                    "weighted_fair_ev": "Expected value using weighted consensus (Pinnacle 50%, DK 25%, FD 25%)"
+                    "no_vig_ev": "Expected value using vig-removed fair odds"
                 },
                 "pagination_note": f"Showing events {offset + 1}-{offset + len(ev_opportunities)} of {total_events} total events"
             }
@@ -441,15 +429,12 @@ def _meets_ev_threshold(calc: dict, threshold: float, method: str) -> bool:
     if method == 'any':
         return (
             (calc.get('standard_ev') is not None and calc['standard_ev'] >= threshold) or
-            (calc.get('no_vig_ev') is not None and calc['no_vig_ev'] >= threshold) or
-            (calc.get('weighted_fair_ev') is not None and calc['weighted_fair_ev'] >= threshold)
+            (calc.get('no_vig_ev') is not None and calc['no_vig_ev'] >= threshold)
         )
     elif method == 'standard':
         return calc.get('standard_ev') is not None and calc['standard_ev'] >= threshold
     elif method == 'no_vig':
         return calc.get('no_vig_ev') is not None and calc['no_vig_ev'] >= threshold
-    elif method == 'weighted_fair':
-        return calc.get('weighted_fair_ev') is not None and calc['weighted_fair_ev'] >= threshold
     else:
         return False
 
@@ -459,10 +444,8 @@ def _calculate_opportunities_summary(ev_calculations: List[dict]) -> dict:
         "total_bookmakers": 0,
         "positive_standard_ev_count": 0,
         "positive_no_vig_ev_count": 0,
-        "positive_weighted_fair_ev_count": 0,
         "best_standard_ev": None,
-        "best_no_vig_ev": None,
-        "best_weighted_fair_ev": None
+        "best_no_vig_ev": None
     }
     
     if not ev_calculations:
@@ -471,7 +454,6 @@ def _calculate_opportunities_summary(ev_calculations: List[dict]) -> dict:
     bookmakers = set()
     best_standard = None
     best_no_vig = None
-    best_weighted = None
     
     for calc in ev_calculations:
         bookmakers.add(calc['bookmaker']['key'])
@@ -481,8 +463,6 @@ def _calculate_opportunities_summary(ev_calculations: List[dict]) -> dict:
             summary['positive_standard_ev_count'] += 1
         if calc['has_positive_no_vig_ev']:
             summary['positive_no_vig_ev_count'] += 1
-        if calc['has_positive_weighted_ev']:
-            summary['positive_weighted_fair_ev_count'] += 1
         
         # Track best EVs
         if calc['standard_ev'] is not None:
@@ -504,21 +484,11 @@ def _calculate_opportunities_summary(ev_calculations: List[dict]) -> dict:
                     "vig_percentage": calc['vig_percentage']
                 }
         
-        if calc['weighted_fair_ev'] is not None:
-            if best_weighted is None or calc['weighted_fair_ev'] > best_weighted['ev']:
-                best_weighted = {
-                    "ev": calc['weighted_fair_ev'],
-                    "bookmaker": calc['bookmaker']['title'],
-                    "outcome": calc['outcome_name'],
-                    "odds": calc['offered_odds'],
-                    "books_used": calc['books_used_in_weighted']
-                }
     
     summary.update({
         "total_bookmakers": len(bookmakers),
         "best_standard_ev": best_standard,
-        "best_no_vig_ev": best_no_vig,
-        "best_weighted_fair_ev": best_weighted
+        "best_no_vig_ev": best_no_vig
     })
     
     return summary
@@ -685,7 +655,6 @@ async def get_events_with_ev(
                     'offered_odds': ev_calc.offered_odds,
                     'standard_ev': ev_calc.standard_ev,
                     'no_vig_ev': ev_calc.no_vig_ev,
-                    'weighted_fair_ev': ev_calc.weighted_fair_ev,
                     'has_positive_ev': ev_calc.has_positive_standard_ev
                 })
             

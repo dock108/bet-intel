@@ -147,20 +147,16 @@ class EVCalculationModel(Base):
     # Three types of EV calculations
     standard_ev = Column(Float)  # EV using raw bookmaker odds (with vig)
     no_vig_ev = Column(Float)    # EV using vig-removed fair odds
-    weighted_fair_ev = Column(Float)  # EV using weighted fair odds (Pinnacle 50%, DK 25%, FD 25%)
     
     # Supporting data for each calculation method
     standard_implied_probability = Column(Float)  # Implied probability from raw odds
     no_vig_fair_probability = Column(Float)      # Fair probability after vig removal
-    weighted_fair_probability = Column(Float)    # Fair probability from weighted calculation
     
     # Reference odds used in calculations
     no_vig_fair_odds = Column(Float)      # Fair odds after vig removal
-    weighted_fair_odds = Column(Float)    # Weighted fair odds
     
     # Calculation metadata
     calculation_method_details = Column(Text)  # JSON string with calculation details
-    books_used_in_weighted = Column(String(200))  # Books used for weighted calculation
     vig_percentage = Column(Float)        # Vig percentage for no-vig calculation
     
     # Timestamps
@@ -170,7 +166,6 @@ class EVCalculationModel(Base):
     # Quality indicators
     has_positive_standard_ev = Column(Boolean, default=False)
     has_positive_no_vig_ev = Column(Boolean, default=False)
-    has_positive_weighted_ev = Column(Boolean, default=False)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

@@ -48,7 +48,7 @@ interface EVOpportunitiesParams {
   bookmaker_keys?: string[];    // Filter by bookmakers
   min_ev_threshold?: number;    // Minimum EV value (default: 0)
   time_range?: 'today' | 'tomorrow' | 'week';
-  sort_by?: 'ev_weighted' | 'ev_standard' | 'ev_no_vig' | 'commence_time';
+  sort_by?: 'ev_standard' | 'ev_no_vig' | 'commence_time';
   limit?: number;               // Number of results (default: 50)
   offset?: number;              // Pagination offset (default: 0)
 }
@@ -96,7 +96,6 @@ interface EVOpportunity {
   ev_calculations: {
     standard: number;          // Raw EV calculation
     no_vig: number;           // Vig-removed EV
-    weighted_fair: number;    // Primary weighted calculation
     confidence_score: number; // 0-100
   };
   probabilities: {
@@ -619,7 +618,7 @@ class EVCardRenderer {
           <div class="flex items-center justify-between mb-2">
             <span class="text-sm font-medium text-green-800">Expected Value</span>
             <span class="text-xl font-bold text-green-600">
-              ${this.formatCurrency(ev_calculations.weighted_fair)}
+              ${this.formatCurrency(ev_calculations.no_vig)}
             </span>
           </div>
           <div class="grid grid-cols-3 gap-2 text-xs text-green-700">
@@ -628,9 +627,6 @@ class EVCardRenderer {
             </div>
             <div>
               <div>No-Vig: ${this.formatCurrency(ev_calculations.no_vig)}</div>
-            </div>
-            <div>
-              <div>Weighted: ${this.formatCurrency(ev_calculations.weighted_fair)}</div>
             </div>
           </div>
         </div>
@@ -828,7 +824,6 @@ describe('API Integration Tests', () => {
       const opportunity = data.opportunities[0];
       expect(opportunity).toHaveProperty('event');
       expect(opportunity).toHaveProperty('ev_calculations');
-      expect(opportunity.ev_calculations).toHaveProperty('weighted_fair');
     }
   });
 
