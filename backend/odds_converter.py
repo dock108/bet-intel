@@ -6,6 +6,16 @@ Converts between different odds formats and calculates implied probabilities
 from typing import Union, Tuple, Dict
 from sqlalchemy.orm import Session
 import logging
+import sys
+import os
+
+# Add the current directory to the Python path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from config import settings
+except ImportError:
+    from .config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -759,22 +769,24 @@ def find_weighted_fair_value_opportunities(market_odds_dict: Dict[str, Tuple[flo
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
+
     # Example usage and testing
-    print("=== Odds Conversion Examples ===")
+    logger.info("=== Odds Conversion Examples ===")
     
     # Test American odds to implied probability
     test_odds = [150, -150, 100, -100, 200, -200, 110, -110]
     
-    print("\nAmerican Odds → Implied Probability:")
+    logger.info("\nAmerican Odds → Implied Probability:")
     for odds in test_odds:
         try:
             prob = american_to_implied_probability(odds)
-            print(f"{odds:4d} → {prob:.4f} ({prob*100:.2f}%)")
+            logger.info(f"{odds:4d} → {prob:.4f} ({prob*100:.2f}%)")
         except Exception as e:
-            print(f"{odds:4d} → Error: {e}")
+            logger.error(f"{odds:4d} → Error: {e}")
     
     # Test opportunity detection
-    print("\n=== Opportunity Detection Examples ===")
+    logger.info("\n=== Opportunity Detection Examples ===")
     scenarios = [
         (0.55, 120),   # Good bet: 55% chance at +120 odds
         (0.45, -110),  # Bad bet: 45% chance at -110 odds  
@@ -783,14 +795,14 @@ if __name__ == "__main__":
     
     for true_prob, odds in scenarios:
         result = detect_positive_ev_opportunity(true_prob, odds)
-        print(f"True prob: {true_prob:.0%}, Odds: {odds:+d}")
-        print(f"  EV: ${result.get('expected_value', 0):.2f}")
-        print(f"  Positive EV: {result.get('has_positive_ev', False)}")
-        print(f"  Edge: {result.get('edge_percentage', 0):.2%}")
-        print()
+        logger.info(f"True prob: {true_prob:.0%}, Odds: {odds:+d}")
+        logger.info(f"  EV: ${result.get('expected_value', 0):.2f}")
+        logger.info(f"  Positive EV: {result.get('has_positive_ev', False)}")
+        logger.info(f"  Edge: {result.get('edge_percentage', 0):.2%}")
+        logger.info("")
     
     # Test vig removal
-    print("=== Vig Removal Examples ===")
+    logger.info("=== Vig Removal Examples ===")
     vig_scenarios = [
         (-110, -110),  # Standard juice
         (-105, -105),  # Lower juice
@@ -800,14 +812,14 @@ if __name__ == "__main__":
     
     for odds_a, odds_b in vig_scenarios:
         result = remove_vig_two_sided(odds_a, odds_b)
-        print(f"Market: {odds_a:+d} / {odds_b:+d}")
-        print(f"  Fair: {result['fair_odds_a']:+.1f} / {result['fair_odds_b']:+.1f}")
-        print(f"  Vig: {result['vig_percentage']:.2%}")
-        print(f"  Total Implied Prob: {result['total_implied_probability']:.3f}")
-        print()
+        logger.info(f"Market: {odds_a:+d} / {odds_b:+d}")
+        logger.info(f"  Fair: {result['fair_odds_a']:+.1f} / {result['fair_odds_b']:+.1f}")
+        logger.info(f"  Vig: {result['vig_percentage']:.2%}")
+        logger.info(f"  Total Implied Prob: {result['total_implied_probability']:.3f}")
+        logger.info("")
     
     # Test weighted fair odds
-    print("=== Weighted Fair Odds Examples ===")
+    logger.info("=== Weighted Fair Odds Examples ===")
     weighted_scenarios = [
         # All three books
         {
@@ -838,9 +850,9 @@ if __name__ == "__main__":
             draftkings_odds=scenario['draftkings_odds'],
             fanduel_odds=scenario['fanduel_odds']
         )
-        print(f"{scenario['description']}:")
-        print(f"  Fair: {result['fair_odds_a']:+.1f} / {result['fair_odds_b']:+.1f}")
-        print(f"  Books: {result['books_used']}")
-        print(f"  Weights: {result['weights_applied']}")
-        print(f"  Residual vig: {result['residual_vig']:.3%}")
-        print() 
+        logger.info(f"{scenario['description']}:")
+        logger.info(f"  Fair: {result['fair_odds_a']:+.1f} / {result['fair_odds_b']:+.1f}")
+        logger.info(f"  Books: {result['books_used']}")
+        logger.info(f"  Weights: {result['weights_applied']}")
+        logger.info(f"  Residual vig: {result['residual_vig']:.3%}")
+        logger.info("")

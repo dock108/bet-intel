@@ -10,6 +10,16 @@ from typing import Dict, Tuple, Optional, List
 from sqlalchemy.orm import Session
 import logging
 import json
+import sys
+import os
+
+# Add the current directory to the Python path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from config import settings
+except ImportError:
+    from .config import settings
 
 from .odds_converter import (
     american_to_implied_probability,
@@ -279,15 +289,17 @@ def _calculate_confidence_score(fair_odds_result: Dict) -> float:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
+
     # Test probability estimation methods
-    print("=== Probability Estimation Testing ===")
+    logger.info("=== Probability Estimation Testing ===")
     
     # This would normally use database session
-    print("Note: Database testing requires active session")
+    logger.info("Note: Database testing requires active session")
     
     # Test naive estimation
     naive_probs = estimate_probabilities_naive()
-    print(f"\nNaive estimation: {naive_probs}")
+    logger.info(f"\nNaive estimation: {naive_probs}")
     
     # Test confidence scoring
     mock_fair_odds = {
@@ -296,4 +308,4 @@ if __name__ == "__main__":
         'residual_vig': 0.005
     }
     confidence = _calculate_confidence_score(mock_fair_odds)
-    print(f"Mock confidence score: {confidence:.3f}") 
+    logger.info(f"Mock confidence score: {confidence:.3f}")

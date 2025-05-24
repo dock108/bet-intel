@@ -19,6 +19,16 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 import json
 import logging
+import sys
+import os
+
+# Add the current directory to the Python path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+try:
+    from config import settings
+except ImportError:
+    from .config import settings
 
 from .database import (
     SessionLocal, EventModel, OddsSnapshotModel, BookmakerModel, EVCalculationModel
@@ -523,11 +533,13 @@ def get_ev_calculations_from_db(db: Session,
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=getattr(logging, settings.log_level.upper()))
+
     # Example usage and testing with the new 7-step methodology
-    print("=== 7-Step EV Calculator Testing ===")
+    logger.info("=== 7-Step EV Calculator Testing ===")
     
     # User's example: Milwaukee Brewers @ Pittsburgh Pirates
-    print("\nUser's Example: Milwaukee Brewers @ Pittsburgh Pirates")
+    logger.info("\nUser's Example: Milwaukee Brewers @ Pittsburgh Pirates")
     
     bookmaker_odds_data = {
         'pinnacle': {'odds_a': +113, 'odds_b': -123},  # Brewers, Pirates
@@ -544,10 +556,12 @@ if __name__ == "__main__":
     
     if 'outcome_a_analysis' in results and results['outcome_a_analysis'].get('success'):
         step6 = results['outcome_a_analysis']['step6_ev_analysis']
-        print(f"\nBrewers (+113 at Pinnacle):")
-        print(f"  Expected Value: {step6['expected_value_percentage']:.2f}%")
-        print(f"  Recommended Minimum: {step6['recommended_minimum_odds']:+.0f}")
-        print(f"  Has +EV: {step6['has_positive_ev']}")
-        print(f"  Fair Probability: {step6['fair_probability_estimate']:.4f}")
+        logger.info(f"\nBrewers (+113 at Pinnacle):")
+        logger.info(f"  Expected Value: {step6['expected_value_percentage']:.2f}%")
+        logger.info(
+            f"  Recommended Minimum: {step6['recommended_minimum_odds']:+.0f}"
+        )
+        logger.info(f"  Has +EV: {step6['has_positive_ev']}")
+        logger.info(f"  Fair Probability: {step6['fair_probability_estimate']:.4f}")
     
-    print("\n" + "="*50) 
+    logger.info("\n" + "=" * 50)
