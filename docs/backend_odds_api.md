@@ -2,10 +2,14 @@
 
 ## Overview
 
-The betting intelligence platform backend integrates with odds data providers to fetch real-time sports betting odds and calculate expected value (EV) opportunities. As of May 2025, we have migrated from The Odds API to **SportsGameOdds (SGO)** for improved coverage and reliability.
+The betting intelligence platform backend integrates with odds data providers to fetch real-time sports betting odds and calculate expected value (EV) opportunities. Integration with **SportsGameOdds (SGO)** is planned for improved coverage and reliability but has not been implemented yet. The backend currently relies on **The Odds API** via the `OddsAPIClient`.
+## Current Implementation: The Odds API
+The system currently uses The Odds API for odds retrieval. The `OddsAPIClient` in the `backend` directory handles all communication with this service.
 
-## Current Integration: SportsGameOdds (SGO) API
 
+## Planned Integration: SportsGameOdds (SGO) API (Pending Implementation)
+
+**Note:** The following SGO integration details are provisional and will be implemented in a future release.
 ### Features
 - 55+ leagues across 25+ sports
 - Sub-minute update frequency
@@ -45,6 +49,7 @@ default_league_id: str = "1"  # MLB
 
 #### Basic Usage
 ```python
+# (planned example - module not yet implemented)
 from backend.sgo_api_client import SGOAPIClient
 
 # Initialize client
@@ -129,6 +134,7 @@ This is automatically handled by the `SGOAPIClient` class.
 The `SGOOddsPoller` class handles automated odds fetching:
 
 ```python
+# (planned example - module not yet implemented)
 from backend.sgo_odds_poller import SGOOddsPoller
 
 # Initialize poller
@@ -170,6 +176,7 @@ SGO API enforces rate limits. The client handles:
 
 #### Error Types
 ```python
+# (planned example - exceptions not yet implemented)
 from backend.sgo_api_client import SGOAPIError, SGORateLimitError
 
 try:
@@ -286,11 +293,10 @@ Error: Invalid JSON response
 
 ---
 
-## Legacy Integration: The Odds API (Deprecated)
+## Existing Integration: The Odds API
 
-### Status: Maintained for Transition Period
-
-The previous integration with The Odds API is maintained during the transition period but will be deprecated. New developments should use the SGO integration.
+### Status
+The Odds API integration remains active and is used in production. SGO support will be added in a future release.
 
 #### Legacy Endpoints
 - `/api/poll-odds` - Legacy polling endpoint
@@ -313,7 +319,7 @@ The previous integration with The Odds API is maintained during the transition p
 - Internal support: Backend development team
 
 #### Related Files
-- `backend/sgo_api_client.py` - SGO API client
-- `backend/sgo_odds_poller.py` - SGO polling service
+- *(planned)* - `backend/sgo_api_client.py` - SGO API client
+- *(planned)* - `backend/sgo_odds_poller.py` - SGO polling service
 - `backend/config.py` - Configuration settings
-- `backend/.env` - Environment variables 
+- `backend/.env` - Environment variables
