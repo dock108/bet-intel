@@ -505,8 +505,7 @@ interface SearchParams {
 #### EV Analysis Section
 ```typescript
 interface EVAnalysis {
-  weightedFairEV: number      // Primary EV calculation
-  noVigEV: number            // Vig-removed calculation  
+  noVigEV: number            // Vig-removed calculation
   standardEV: number         // Raw odds calculation
   trueProbability: number    // Calculated fair probability
   impliedProbability: number // Bookmaker's implied probability
@@ -724,7 +723,7 @@ interface P2POddsRecommendation {
 ```
 
 #### Calculation Methodology
-- **Base Fair Odds:** Start with weighted fair value calculation
+- **Base Fair Odds:** Start with vig-removed fair value calculation
 - **Platform Premium:** Add 5-15 points based on platform liquidity
 - **Fill Probability:** Adjust odds based on historical fill rates
 - **Time Sensitivity:** Factor in game start time (closer = higher odds)

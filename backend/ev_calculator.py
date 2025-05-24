@@ -419,20 +419,16 @@ def store_ev_calculations_to_db(db: Session,
                 # Store the main EV result - use percentage EV
                 standard_ev=step6.get('expected_value_percentage', 0),
                 no_vig_ev=step6.get('expected_value_percentage', 0),  # Same value for consistency
-                weighted_fair_ev=None,  # Not using weighted calculation anymore
                 
                 # Store probabilities
                 standard_implied_probability=step6.get('target_implied_probability', 0),
                 no_vig_fair_probability=step4_5.get('fair_probability', 0),
-                weighted_fair_probability=None,
                 
                 # Store reference odds
                 no_vig_fair_odds=step4_5.get('recommended_minimum_odds', 0),
-                weighted_fair_odds=None,
                 
                 # Store full calculation details
                 calculation_method_details=json.dumps(analysis, default=str),
-                books_used_in_weighted=None,
                 vig_percentage=None,
                 
                 # Timestamps
@@ -440,8 +436,7 @@ def store_ev_calculations_to_db(db: Session,
                 
                 # Quality indicators
                 has_positive_standard_ev=step6.get('has_positive_ev', False),
-                has_positive_no_vig_ev=step6.get('has_positive_ev', False),
-                has_positive_weighted_ev=False
+                has_positive_no_vig_ev=step6.get('has_positive_ev', False)
             )
             
             db.add(ev_record)
@@ -499,17 +494,12 @@ def get_ev_calculations_from_db(db: Session,
                 'offered_odds': calc.offered_odds,
                 'standard_ev': calc.standard_ev,
                 'no_vig_ev': calc.no_vig_ev,
-                'weighted_fair_ev': calc.weighted_fair_ev,
                 'standard_implied_probability': calc.standard_implied_probability,
                 'no_vig_fair_probability': calc.no_vig_fair_probability,
-                'weighted_fair_probability': calc.weighted_fair_probability,
                 'no_vig_fair_odds': calc.no_vig_fair_odds,
-                'weighted_fair_odds': calc.weighted_fair_odds,
                 'vig_percentage': calc.vig_percentage,
-                'books_used_in_weighted': calc.books_used_in_weighted,
                 'has_positive_standard_ev': calc.has_positive_standard_ev,
                 'has_positive_no_vig_ev': calc.has_positive_no_vig_ev,
-                'has_positive_weighted_ev': calc.has_positive_weighted_ev,
                 'calculated_at': calc.created_at,
                 'calculation_method_details': (json.loads(calc.calculation_method_details) 
                                               if calc.calculation_method_details else None)

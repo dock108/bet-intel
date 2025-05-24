@@ -88,7 +88,7 @@ The betting intelligence platform implements three distinct Expected Value calcu
 - More complex calculation
 - Limited by availability of reference odds
 
-**Implementation**: `calculate_weighted_fair_ev()`
+**Note**: The weighted fair EV calculation has been removed from the current backend implementation.
 
 ## Database Schema
 
@@ -111,16 +111,13 @@ CREATE TABLE ev_calculations (
     -- Three EV calculations
     standard_ev FLOAT,                -- Standard EV (with vig)
     no_vig_ev FLOAT,                 -- No-vig EV
-    weighted_fair_ev FLOAT,          -- Weighted fair odds EV
     
     -- Supporting probabilities
     standard_implied_probability FLOAT,      -- From raw odds
     no_vig_fair_probability FLOAT,          -- After vig removal
-    weighted_fair_probability FLOAT,        -- From weighted calculation
     
     -- Reference odds
     no_vig_fair_odds FLOAT,          -- Fair odds after vig removal
-    weighted_fair_odds FLOAT,        -- Weighted fair odds
     
     -- Metadata
     calculation_method_details TEXT,  -- JSON with full calculation details
@@ -164,7 +161,6 @@ results = calculate_comprehensive_ev(
 # Results include all three calculations plus analysis
 print(f"Standard EV: ${results['standard_ev']['ev']:+.2f}")
 print(f"No-Vig EV: ${results['no_vig_ev']['ev']:+.2f}")
-print(f"Weighted Fair EV: ${results['weighted_fair_ev']['ev']:+.2f}")
 print(f"Recommendation: {results['recommendation']['action']}")
 ```
 
@@ -225,7 +221,6 @@ results = calculate_comprehensive_ev(
 # All methods show positive EV:
 # Standard EV: +$32.00 (large edge due to true 60% vs implied 45.5%)
 # No-Vig EV: +$28.50 (slightly lower after vig removal)
-# Weighted Fair EV: +$25.20 (most conservative, accounts for sharp lines)
 
 # Recommendation: bet_large, confidence: high
 ```
@@ -246,7 +241,6 @@ results = calculate_comprehensive_ev(
 # Mixed results:
 # Standard EV: +$1.43 (barely positive)
 # No-Vig EV: -$0.95 (negative after vig removal)
-# Weighted Fair EV: -$2.10 (negative vs sharp consensus)
 
 # Recommendation: no_bet, confidence: medium
 # Reasoning: "Weighted fair odds show negative EV (most reliable method)"
@@ -266,7 +260,6 @@ results = calculate_comprehensive_ev(
 # Limited results:
 # Standard EV: +$19.33 (positive but uncertain)
 # No-Vig EV: Error (need both sides for vig removal)
-# Weighted Fair EV: Error (no reference odds available)
 
 # Recommendation: bet_small, confidence: low
 # Reasoning: "Limited to standard method only"
@@ -410,9 +403,8 @@ except EVCalculationError as e:
 ### 1. Method Priority
 
 **For Decision Making:**
-1. Weighted Fair EV (most reliable when available)
-2. No-Vig EV (good baseline)
-3. Standard EV (initial screening only)
+1. No-Vig EV (good baseline)
+2. Standard EV (initial screening only)
 
 **For Analysis:**
 - Use all three for comprehensive market understanding
