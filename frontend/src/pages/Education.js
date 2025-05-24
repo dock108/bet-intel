@@ -45,6 +45,25 @@ const Education = () => {
 
       <div className="row">
         <div className="col-lg-10 mx-auto">
+
+          {/* Reality Check: U.S. Sports Betting */}
+          <section className="mb-5">
+            <div className="alert alert-secondary">
+              <h5 className="mb-2">
+                <i className="fas fa-flag-usa me-2"></i>Reality Check: The U.S. Market
+              </h5>
+              <p className="mb-2">
+                With strict regulations, taxes, and increasingly efficient pricing, beating
+                mainstream books like <strong>DraftKings</strong> or <strong>FanDuel</strong>
+                long term is extremely difficult without a disciplined approach.
+              </p>
+              <p className="mb-0">
+                Peer-to-peer exchanges let you post offers like <strong>limit orders</strong>
+                in stock trading. By catching market swings or facing opponents who haven't
+                done their homework, you can create opportunities those books rarely provide.
+              </p>
+            </div>
+          </section>
           
           {/* Section 1: What is P2P Betting? */}
           <section id="p2p" className="mb-5">
