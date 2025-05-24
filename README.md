@@ -66,7 +66,12 @@ bet-intel/
    pip install -r requirements.txt
    ```
 
-2. **Start the FastAPI server:**
+2. **Copy the example environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Start the FastAPI server:**
    ```bash
    python main.py
    ```

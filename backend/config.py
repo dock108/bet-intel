@@ -4,6 +4,7 @@ Configuration management for the betting intelligence platform
 
 from pydantic_settings import BaseSettings
 from typing import Optional
+import os
 
 
 class Settings(BaseSettings):
@@ -35,7 +36,8 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379"
     
     # Security
-    secret_key: str = "your_secret_key_here"
+    # Default to the SECRET_KEY environment variable if available
+    secret_key: str = os.getenv("SECRET_KEY", "your_secret_key_here")
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     
